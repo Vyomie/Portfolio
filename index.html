@@ -5,12 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Vyom — Developer</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
 <style>
+
 :root{
   --bg:#000;
   --fg:#fff;
   --muted:#999;
   --timeline-marker:rgba(200,200,200,0.3);
+  /* ADD THESE */
+  --slider-track: #333;
+  --slider-thumb: #fff;
+  --accent: #bbbbbb;
+  --card:#111;
 }
 *{box-sizing:border-box}
 body{
@@ -180,8 +189,68 @@ footer{
 }
 
 /* subtle fade on scroll */
-.fade{opacity:0;transform:translateY(40px);transition:.8s ease-out;}
-.fade.visible{opacity:1;transform:none;}
+.fade{opacity:0;transform:translateY(40px);transition:.8s ease-out;pointer-events: none;}
+.fade.visible{opacity:1;transform:none;pointer-events: auto;}
+
+/* Manim visualizer */
+.viz-section {
+      padding: 40px 6vw;
+      max-width: 1200px;
+      margin: 40px auto;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+.viz-header { margin-bottom: 10px; }
+.viz-title { font-size: 2rem; margin: 0 0 6px; font-weight:700; color: var(--accent); }
+.viz-sub { margin: 0 0 14px; color: var(--muted); }
+
+.problem-selector { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+.problem-btn {
+      background: linear-gradient(180deg,var(--card),#0a0a0a);
+      border:1px solid rgba(255,255,255,0.03);
+      padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:#e9eef6;
+    }
+.problem-btn.active{ box-shadow:0 6px 20px rgba(109,106,255,0.12); border-color:var(--accent); color:var(--accent) }
+
+.stage{ display:flex; gap:18px; align-items:flex-start; }
+.sidebar{ width:260px; flex-shrink:0; padding:14px; box-sizing:border-box; }
+.slider-block{ margin-bottom:18px; }
+.slider-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-family: monospace; }
+
+input[type=range]{ -webkit-appearance:none; width:100%; height:6px; background:transparent; }
+input[type=range]::-webkit-slider-runnable-track{ height:4px; background:var(--slider-track); border-radius:999px; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7px; width:12px; height:12px; border-radius:50%; background:var(--slider-thumb); box-shadow:0 4px 10px rgba(0,0,0,0.5) }
+.range-wrap{ position:relative; }
+.range-fill { position:absolute; left:0; top:50%; transform:translateY(-50%); height:6px; border-radius:999px; background:linear-gradient(90deg,var(--accent),#aab0ff); pointer-events:none; width:0 }
+
+.canvas-frame { flex:1; position:relative; min-width:0; }
+/* canvas responsive using aspect-ratio, JS synchronizes internal pixel size */
+#scene { width:100%; height:auto; aspect-ratio: 16/10; background:#030304; border-radius:12px; border:1px solid rgba(255,255,255,0.03); display:block; }
+
+.equationOverlay { position:absolute; left:50%; top:18px; transform:translateX(-50%); color:#fff; font-family:serif; font-size:18px; background:rgba(0,0,0,0.25); padding:6px 10px; border-radius:8px; z-index:20; pointer-events:none; }
+
+.note { color:var(--muted); font-size:13px; margin-top:8px; }
+
+#manim-guy { position:absolute; bottom:10px; left:10px; width:120px; opacity:0.95; pointer-events:none; }
+
+@media(max-width:900px){
+      .stage { flex-direction:column; gap:22px; }
+      .sidebar { width:100%; }
+      #scene { aspect-ratio: 1 / 1; }
+      #manim-guy { width:90px; bottom:8px; left:8px; }
+      .equationOverlay{ font-size:15px; padding:4px 8px; }
+    }
+
+@media(max-width:450px){
+      #scene { aspect-ratio: 1 / 1.2; }
+    }
+
+/* small tweaks to avoid navbar overlap on very short screens */
+@media(max-height:560px){
+      header { padding-top: 90px; }
+    }
+
 </style>
 
 <style>
@@ -213,7 +282,29 @@ footer{
 
   /* Tweets */
   .tweets {padding:0 10px;}
-  
+  .tooltip-links {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.tooltip-links a {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 0.85em;
+  font-weight: 600;
+  transition: 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.tooltip-links a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
   /* Quotes */
   #quotes div {padding:0 10px;}
   /* Prevent horizontal overflow */
@@ -348,6 +439,141 @@ footer{
   #navbar ul li a {
     font-size: 0.75em;
   }
+}
+
+</style>
+
+<style>
+#digit-classifier {
+  padding: 60px 10vw;
+  border-top: 1px solid #111;
+}
+
+.digit-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.digit-left, .digit-right {
+  flex: 1 1 280px;
+  min-width: 260px;
+}
+
+#digitCanvas {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: crosshair;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+
+.digit-controls {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.digit-controls button {
+  background: #111;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.digit-controls button:hover {
+  background: #222;
+  border-color: #555;
+}
+
+.digit-hint {
+  margin-top: 8px;
+  font-size: 0.75em;
+  color: var(--muted);
+}
+
+#digitPreview {
+  background: #000;
+  border-radius: 6px;
+  border: 1px solid #333;
+  image-rendering: pixelated;
+}
+
+.digit-preview-block, .digit-activations-block {
+  margin-bottom: 20px;
+}
+
+.digit-preview-title {
+  font-size: 0.85em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.digit-prediction {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.activation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8em;
+}
+
+.activation-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activation-label {
+  width: 18px;
+}
+
+.activation-bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: #111;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.activation-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7f8cff, #aab0ff);
+  transition: width 0.1s linear;
+}
+
+.activation-value {
+  width: 40px;
+  text-align: right;
+  color: var(--muted);
+}
+
+/* Responsive tweak */
+@media (max-width: 800px) {
+  .digit-layout {
+    flex-direction: column;
+  }
+}
+#digit-classifier {
+    position: relative;
+    z-index: 2000;
+}
+
+#digitCanvas {
+    position: relative;
+    z-index: 3000;
+    pointer-events: auto;
 }
 
 </style>
@@ -516,13 +742,13 @@ footer{
   <div class="timeline">
     
     <div class="timeline-entry">
-      <div class="time">Forecast 2026</div>
-      <h3>McNaCl (Minecraft Neural Algorithim Circuit Library)</h3>
-      <p>Python package made for creating complex neural network redstone structures in vanila minecraft.</p>
+      <div class="time">Oct 2025 - Present</div>
+      <h3>Teenage Works</h3>
+      <p>leading an initiative to build consumer ML products (Team of 7 for now).</p>
     </div>
 
     <div class="timeline-entry">
-      <div class="time">Sept 2025 — Present</div>
+      <div class="time">Sept 2025 - Present</div>
       <h3>Pandora: AI-Powered EdTech Platform</h3>
       <p>Developing adaptive curriculum system with real-time learning analytics for personalized education.</p>
     </div>
@@ -534,21 +760,33 @@ footer{
     </div>
 
     <div class="timeline-entry">
-      <div class="time">Nov 2024 — Present</div>
-      <h3>QuantaML (Founder & Lead)</h3>
-      <p>Leading a collective focusing on compute-efficient ML models: ArthaLM, Lumen, etc.</p>
-    </div>
-
-    <div class="timeline-entry">
       <div class="time">Jul 2025 - Sept 2025</div>
       <h3>Artha-1 (LLM)</h3>
       <p>400M-parameter foundational LLM with custom architecture and semantic liquid blocks.</p>
     </div>
 
     <div class="timeline-entry">
-      <div class="time">Jan 2024 — Oct 2025</div>
+      <div class="time">Feb 2025 - Mar 2025</div>
+      <h3>VYXM Protocol</h3>
+      <p>A toolkit/protocol python package for AI/ML and orchestration of multimodal system and making complex AI agents.</p>
+    </div>
+
+    <div class="timeline-entry">
+      <div class="time">Jan 2024 - Oct 2025</div>
       <h3>Liquid Neural Network (Research Draft)</h3>
-      <p>Adaptive drone navigation framework using Liquid Neural Networks submitted for review to Journal of Emerging Investigators(JEI).</p>
+      <p>Adaptive drone navigation framework using Liquid Neural Networks submitted for review to Neural Computing And Applications(NCAA).</p>
+    </div>
+    
+    <div class="timeline-entry">
+      <div class="time">Mar 2025 - Apr 2025</div>
+      <h3>MusiCat</h3>
+      <p>Music-therapy AI agent that curates personalized song library based on user's mood and emotions.</p>
+    </div>
+
+    <div class="timeline-entry">
+      <div class="time">Jan 2025 - Feb 2025</div>
+      <h3>Hopfield Neural Network Library</h3>
+      <p>Published my very first python library for initializing and running your own hopfield neural networks.</p>
     </div>
 
     <div class="timeline-entry">
@@ -582,6 +820,10 @@ footer{
       <div class="project-title">Artha-1</div>
       <div class="tooltip">
         Independently built 400 M-parameter LLM using PyTorch with modular reasoning units and custom tokenizer.
+      <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/Artha" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/artha1.pdf" target="_blank">Docs</a>
+      </div>
       </div>
     </div>
     <div class="project">
@@ -589,6 +831,10 @@ footer{
       <div class="project-title">Quantum Neural Networks</div>
       <div class="tooltip">
         Quantum Neural Network Model with Qiskit having ~2500 parameters using Rotational entanglement to classify compressed images of cats and dogs on real quantum hardware.
+        <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/QNN" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/quantum-neural-network.pdf" target="_blank">Docs</a>
+      </div>
       </div>
     </div>
     <div class="project">
@@ -596,6 +842,54 @@ footer{
       <div class="project-title">Liquid Neural Network for Continual learning in Dynamic Environments</div>
       <div class="tooltip">
         Research paper on continual learning navigation agent achieving 97% success in obstacle-rich maps without large pre-training on datasets.
+      <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/AdaptiveLearningLNN" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/adaptive-learning-liquid-neural-network.pdf" target="_blank">Docs</a>
+      </div>
+      </div>
+    </div>
+    <div class="project">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=60" alt="">
+      <div class="project-title">MusiCat</div>
+      <div class="tooltip">
+        Music-therapy AI agent that recommends and curates personalized playlists directly in spotify according to user's emotions using a corpus of custom 500 songs dataset.
+      <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/MusiCat" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/musicat.pdf" target="_blank">Docs</a>
+      </div>
+      </div>
+    </div>
+    <div class="project">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=60" alt="">
+      <div class="project-title">VYXM Protocol</div>
+      <div class="tooltip">
+        Protocol to orchestrate large AI systems and perform automated tasks using specialist models.
+    <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/VYXM" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/vyxm-protocol.pdf" target="_blank">Docs</a>
+      </div>
+      </div>
+    </div>
+    <div class="project">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=60" alt="">
+      <div class="project-title">Pandora</div>
+      <div class="tooltip">
+        Creating a student centric app that solves doubts using Manim animations made by our custom AI Pipeline called Nutshell.
+      <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/Pandora" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/pandora.pdf" target="_blank">Docs</a>
+      </div>
+      </div>
+    </div>
+    <div class="project">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=60" alt="">
+      <div class="project-title">Custom File format '.pndr'</div>
+      <div class="tooltip">
+        Custom file format for Pandora that can render both LaTeX and Manim together in a singular PDF like file.
+      <div class="tooltip-links">
+          <a href="https://github.com/Vyomie/Pandora-Notes" target="_blank">GitHub</a>
+          <a href="https://www.vyxm.in/docs/pndr-file.pdf" target="_blank">Docs</a>
+      </div>
       </div>
     </div>
   </div>
@@ -606,15 +900,15 @@ footer{
   <h2>Recent Notes</h2>
   <div class="tweets">
     <div class="tweet">
-      <div class="meta">@Vyomie · 2025-10-22</div>
-      <div>Working on an adaptive RL module for LNNs. The weights stabilized after tuning η = 0.002.</div>
+      <div class="meta">@Vyomie · 2025-12-1</div>
+      <div>Working on optimizing Pandora's AI Pipeline with Claude Sonnet/Opus 4.5 as Code models and Gemini 2.5 fast lite as Scripting model.</div>
     </div>
     <div class="tweet">
-      <div class="meta">@Vyomie · 2025-10-18</div>
-      <div>Trying to quantize Liquid cells without losing temporal adaptivity. Harder than it looks.</div>
+      <div class="meta">@Vyomie · 2025-12-1</div>
+      <div>Trying to reduce render times in Pandora's AI Pipeline.</div>
     </div>
     <div class="tweet">
-      <div class="meta">@Vyomie · 2025-10-14</div>
+      <div class="meta">@Vyomie · 2025-11-30</div>
       <div>Prototype for the Pandora Manim API is generating custom animations in real-time. Early signs of promise.</div>
     </div>
   </div>
@@ -631,7 +925,7 @@ footer{
         <iframe 
           src="https://open.spotify.com/embed/playlist/29BaDUJS5n5venJE9TRfmF?si=zMBabEc4S8u5WkSNNPKakw" 
           width="320" 
-          height="50%" 
+          height="100%" 
           frameborder="0" 
           allowtransparency="true" 
           allow="encrypted-media">
@@ -663,6 +957,59 @@ footer{
   </div>
 </section>
 
+<!-- ========== NEW: Interactive Pandora Visualizer (merged) ========== -->
+<section class="viz-section" id="visualizer">
+    <div class="viz-header">
+      <div class="viz-title">Interactive Math/Physics Visualizer</div>
+      <div class="viz-sub">Interactive playground to visualize common maths and physics problems.</div>
+    </div>
+
+    <div class="problem-selector" id="problemSelector"></div>
+
+    <div class="stage">
+      <div class="sidebar" id="sidebar"></div>
+        <div class="canvas-frame">
+        <div id="equationOverlay" class="equationOverlay">\(\text{Select a problem}\)</div>
+        <!-- visualizer canvas -->
+        <canvas id="scene" width="900" height="520"></canvas>
+        <div class="note">Grid units map to math units; origin (0,0) is at canvas center.</div>
+      </div>
+    </div>
+</section>
+
+<!--Digit Classifier-->
+<section id="digit-classifier" class="fade">
+  <h2>Digit Classifier (MNIST · 16×16)</h2>
+  <p style="color:var(--muted);max-width:600px;">
+    Draw a digit (0–9) in the box. The model runs in your browser using weights trained on MNIST
+    and shows live activations for each class.
+  </p>
+
+  <div class="digit-layout">
+    <div class="digit-left">
+      <canvas id="digitCanvas" width="256" height="256"></canvas>
+      <div class="digit-controls">
+        <button id="clearDigit">Clear</button>
+        <button id="predictDigit">Predict</button>
+      </div>
+      <div class="digit-hint">Tip: Draw in the center with thick strokes.</div>
+    </div>
+
+    <div class="digit-right">
+      <div class="digit-preview-block">
+        <div class="digit-preview-title">16×16 Input</div>
+        <canvas id="digitPreview" width="160" height="160"></canvas>
+      </div>
+
+      <div class="digit-activations-block">
+        <div class="digit-preview-title">Output Activations</div>
+        <div id="digitPrediction" class="digit-prediction">Prediction: —</div>
+        <div id="activationList" class="activation-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ASCII ART: VYOMIE -->
 <section class="ascii fade">
 <pre>
@@ -678,10 +1025,271 @@ Y88b      /                                                ,e,
 <!-- CONTACT -->
 <footer id="footer" class="fade">
   <div>GitHub : <a href="https://github.com/Vyomie" target="_blank">github.com/Vyomie</a></div>
-  <div>Blog : <a href="https://vyxm.in/blogs" target="_blank">vyxm.in/blog</a></div>
+  <div>Blog : <a href="https://www.vyxm.in/blogs" target="_blank">www.vyxm.in/blog</a></div>
   <div>Email : <a href="mailto:contact@vyxm.in">contact@vyxm.in</a></div>
   <br>© 2025 Vyom Nishant Patel
 </footer>
+
+
+<script>
+/* ===== Digit Classifier ===== */
+const digitCanvas = document.getElementById('digitCanvas');
+const digitCtx = digitCanvas.getContext('2d');
+const previewCanvas = document.getElementById('digitPreview');
+const previewCtx = previewCanvas.getContext('2d');
+
+let drawing = false;
+let lastX = 0, lastY = 0;
+
+// Init drawing canvas
+function initDigitCanvas() {
+  digitCtx.fillStyle = '#000';
+  digitCtx.fillRect(0, 0, digitCanvas.width, digitCanvas.height);
+}
+initDigitCanvas();
+
+// Mouse / touch drawing
+function getPos(e) {
+  const rect = digitCanvas.getBoundingClientRect();
+  if (e.touches && e.touches[0]) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  } else {
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  const pos = getPos(e);
+  lastX = pos.x;
+  lastY = pos.y;
+}
+
+function draw(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  digitCtx.strokeStyle = '#fff';
+  digitCtx.lineWidth = 22;
+  digitCtx.lineCap = 'round';
+  digitCtx.lineJoin = 'round';
+  digitCtx.beginPath();
+  digitCtx.moveTo(lastX, lastY);
+  digitCtx.lineTo(pos.x, pos.y);
+  digitCtx.stroke();
+  lastX = pos.x;
+  lastY = pos.y;
+
+  runDigitInference(); // live-ish
+}
+
+function endDraw(e) {
+  if (!drawing) return;
+  drawing = false;
+  runDigitInference();
+}
+
+digitCanvas.addEventListener('mousedown', startDraw);
+digitCanvas.addEventListener('mousemove', draw);
+digitCanvas.addEventListener('mouseup', endDraw);
+digitCanvas.addEventListener('mouseleave', endDraw);
+
+digitCanvas.addEventListener('touchstart', startDraw, {passive:false});
+digitCanvas.addEventListener('touchmove', draw, {passive:false});
+digitCanvas.addEventListener('touchend', endDraw);
+digitCanvas.addEventListener('touchcancel', endDraw);
+
+// Controls
+document.getElementById('clearDigit').addEventListener('click', () => {
+  initDigitCanvas();
+  drawPreview();
+  showBlankActivations();
+});
+
+document.getElementById('predictDigit').addEventListener('click', () => {
+  runDigitInference();
+});
+
+// --- Model weights ---
+let MLP_WEIGHTS = null;
+
+async function loadDigitWeights() {
+  try {
+    const res = await fetch('mnist_mlp_16x16.json');
+    if (!res.ok) throw new Error('Cannot load weight JSON');
+    MLP_WEIGHTS = await res.json();
+    console.log('Loaded weights:', MLP_WEIGHTS);
+    showBlankActivations();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('digitPrediction').textContent =
+      'Prediction: error loading weights';
+  }
+}
+loadDigitWeights();
+
+// Utility: softmax
+function softmax(arr) {
+  const max = Math.max(...arr);
+  const exps = arr.map(v => Math.exp(v - max));
+  const sum = exps.reduce((a,b)=>a+b,0);
+  return exps.map(v => v / sum);
+}
+
+// Get 16x16 input vector from drawing
+function getDigitInputVector() {
+  // Downsample to 16x16 via an offscreen canvas
+  const tmp = document.createElement('canvas');
+  tmp.width = 16;
+  tmp.height = 16;
+  const tctx = tmp.getContext('2d');
+
+  tctx.drawImage(digitCanvas, 0, 0, 16, 16);
+  const imgData = tctx.getImageData(0, 0, 16, 16).data;
+
+  const v = [];
+  for (let i = 0; i < imgData.length; i += 4) {
+    const r = imgData[i];
+    const g = imgData[i+1];
+    const b = imgData[i+2];
+    const gray = (r + g + b) / (3 * 255); // 0..1
+    v.push(gray);
+  }
+
+  // Update visible preview
+  drawPreviewFromTmp(tmp);
+
+  return v;
+}
+
+function drawPreview() {
+  // when cleared
+  previewCtx.fillStyle = '#000';
+  previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+}
+
+function drawPreviewFromTmp(tmp) {
+  previewCtx.imageSmoothingEnabled = false;
+  previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+  previewCtx.drawImage(tmp, 0, 0, previewCanvas.width, previewCanvas.height);
+}
+
+// Forward pass through 1-hidden-layer MLP
+function mlpForward(x) {
+  if (!MLP_WEIGHTS) return null;
+
+  const { W1, b1, W2, b2 } = MLP_WEIGHTS;
+  const hiddenSize = b1.length;
+
+  // hidden = relu(W1 x + b1)
+  const h = new Array(hiddenSize).fill(0);
+  for (let i = 0; i < hiddenSize; i++) {
+    let sum = 0;
+    for (let j = 0; j < x.length; j++) {
+      sum += W1[j][i] * x[j];
+    }
+    sum += b1[i];
+    h[i] = Math.max(0, sum);
+  }
+
+  // output = W2 h + b2
+  const outSize = b2.length;
+  const logits = new Array(outSize).fill(0);
+  for (let k = 0; k < outSize; k++) {
+    let sum = 0;
+    for (let i = 0; i < hiddenSize; i++) {
+      sum += W2[i][k] * h[i];
+    }
+    sum += b2[k];
+    logits[k] = sum;
+  }
+
+  const probs = softmax(logits);
+  return probs;
+}
+
+// Build activation UI
+const activationList = document.getElementById('activationList');
+function buildActivationUI() {
+  activationList.innerHTML = '';
+  for (let d = 0; d < 10; d++) {
+    const row = document.createElement('div');
+    row.className = 'activation-row';
+
+    const label = document.createElement('div');
+    label.className = 'activation-label';
+    label.textContent = d;
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'activation-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'activation-bar';
+    bar.id = 'act-bar-' + d;
+    barWrap.appendChild(bar);
+
+    const val = document.createElement('div');
+    val.className = 'activation-value';
+    val.id = 'act-val-' + d;
+    val.textContent = '0.00';
+
+    row.appendChild(label);
+    row.appendChild(barWrap);
+    row.appendChild(val);
+    activationList.appendChild(row);
+  }
+}
+buildActivationUI();
+
+function showBlankActivations() {
+  for (let d = 0; d < 10; d++) {
+    const bar = document.getElementById('act-bar-' + d);
+    const val = document.getElementById('act-val-' + d);
+    if (bar) bar.style.width = '0%';
+    if (val) val.textContent = '0.00';
+  }
+  document.getElementById('digitPrediction').textContent = 'Prediction: —';
+}
+
+// Run inference & update activations
+function runDigitInference() {
+  if (!MLP_WEIGHTS) return;
+  const x = getDigitInputVector();
+  const probs = mlpForward(x);
+  if (!probs) return;
+
+  let bestIdx = 0;
+  let bestVal = probs[0];
+  probs.forEach((p, i) => {
+    if (p > bestVal) {
+      bestVal = p;
+      bestIdx = i;
+    }
+  });
+
+  for (let d = 0; d < 10; d++) {
+    const bar = document.getElementById('act-bar-' + d);
+    const val = document.getElementById('act-val-' + d);
+    const p = probs[d];
+    if (bar) bar.style.width = (p * 100).toFixed(1) + '%';
+    if (val) val.textContent = p.toFixed(2);
+  }
+
+  document.getElementById('digitPrediction').textContent =
+    'Prediction: ' + bestIdx + ' (p=' + bestVal.toFixed(2) + ')';
+}
+
+// Init preview
+drawPreview();
+
+</script>
+
 
 <script>
   // fade reveal on scroll
@@ -746,6 +1354,356 @@ async function fetchLatestCommits() {
 }
 
 fetchLatestCommits();
+</script>
+
+<script>
+    /* ---------- Visualizer JS ---------- */
+    // Grab elements after DOM load
+    const canvas = document.getElementById('scene');
+    const ctx = canvas.getContext('2d');
+
+    // Start with displayed dimensions; JS keeps canvas pixel size synced
+    let W = 900, H = 520;
+    let scale = 40;          // px per math-unit (will be recalculated)
+    let animStart = Date.now();
+    let time = 0;
+    let current = 'sine';
+
+    // Resize: sync canvas pixel dimensions to its displayed size and adjust math scale
+    function vizResize(){
+      const rect = canvas.getBoundingClientRect();
+      // set internal pixel buffer to match displayed size (for crispness on high-dpi, we could multiply by devicePixelRatio if desired)
+      W = canvas.width  = Math.max(300, Math.floor(rect.width));
+      H = canvas.height = Math.max(200, Math.floor(rect.height));
+
+      // choose scale proportional to width; this keeps graph aspect correct and prevents squish
+      // We aim to show roughly 25 math-units across the width on desktop; adjust for mobile smaller widths
+      const targetUnitsAcross = Math.max(16, Math.min(30, W / 40)); // heuristic
+      scale = W / targetUnitsAcross;
+    }
+
+    window.addEventListener('resize', vizResize);
+    vizResize();
+
+    // coordinate transforms
+    function screen(x,y){ return { x: W/2 + x*scale, y: H/2 - y*scale }; }
+
+    function drawGrid(){
+      // background
+      ctx.fillStyle = '#030304';
+      ctx.fillRect(0,0,W,H);
+
+      // grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+
+      // vertical lines: start from canvas center offset
+      const offsetX = (W/2) % scale;
+      for(let x=offsetX; x<W; x+=scale){
+        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+      }
+      const offsetY = (H/2) % scale;
+      for(let y=offsetY; y<H; y+=scale){
+        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+      }
+      // origin dot
+      const o = screen(0,0);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(o.x,o.y,3,0,Math.PI*2); ctx.fill();
+    }
+
+    function annotatePoint(x,y,label){
+      const p = screen(x,y);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
+      ctx.font = '12px monospace';
+      ctx.fillText(label, p.x + 8, p.y - 6);
+    }
+
+    function setEquation(latex){
+      const el = document.getElementById('equationOverlay');
+      el.innerHTML = '\\(' + latex + '\\)';
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
+    }
+
+    // drawCharge helper
+    function drawCharge(p,q){
+      const s = screen(p.x,p.y);
+      ctx.fillStyle = q>0? 'rgba(255,120,120,0.95)':'rgba(120,160,255,0.95)';
+      ctx.beginPath(); ctx.arc(s.x,s.y,10,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font='12px monospace';
+      ctx.fillText(q>0?`+${q}`:`${q}`, s.x-8, s.y+4);
+    }
+
+    // Problems
+    const problems = {
+      sine: {
+        title:'Sine Wave',
+        vars:{
+          amplitude:{min:0.5,max:5,step:0.1,value:2},
+          frequency:{min:0.2,max:6,step:0.1,value:1},
+          phase:{min:0,max:6.283,step:0.01,value:0}
+        },
+        draw: ({vars,t})=>{
+          drawGrid();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath();
+          for(let px = -W/2; px <= W/2; px += 1){
+            const x = px/scale;
+            const y = vars.amplitude * Math.sin(vars.frequency * x + vars.phase + t*2);
+            const s = screen(x,y);
+            if (px === -W/2) ctx.moveTo(s.x,s.y); else ctx.lineTo(s.x,s.y);
+          }
+          ctx.stroke();
+          setEquation(`y=${vars.amplitude}\\sin(${vars.frequency}x+${vars.phase.toFixed(2)})`);
+        }
+      },
+
+      quadratic: {
+        title:'Quadratic',
+        vars:{
+          a:{min:-3,max:3,step:0.025,value:1},
+          b:{min:0,max:5,step:0.05,value:0},
+          c:{min:-5,max:5,step:0.05,value:-4}
+        },
+        draw: ({vars})=>{
+          drawGrid();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath();
+          for(let x=-10; x<=10; x+=0.02){
+            const y = vars.a*x*x + vars.b*x + vars.c;
+            const s = screen(x,y);
+            if (x === -10) ctx.moveTo(s.x,s.y); else ctx.lineTo(s.x,s.y);
+          }
+          ctx.stroke();
+          setEquation(`y=${vars.a}x^{2}+${vars.b}x+${vars.c}`);
+          const A = vars.a, B = vars.b, C = vars.c;
+          if (A !== 0){
+            const xv = -B/(2*A);
+            const yv = A*xv*xv + B*xv + C;
+            annotatePoint(xv,yv,`V(${xv.toFixed(2)},${yv.toFixed(2)})`);
+            const disc = B*B - 4*A*C;
+            if (disc >= 0){
+              const r1 = (-B + Math.sqrt(disc)) / (2*A);
+              const r2 = (-B - Math.sqrt(disc)) / (2*A);
+              annotatePoint(r1,0,`(${r1.toFixed(2)},0)`);
+              annotatePoint(r2,0,`(${r2.toFixed(2)},0)`);
+            }
+          }
+        }
+      },
+
+      projectile: {
+        title:'Projectile Motion',
+        vars:{
+          velocity:{min:5,max:10,step:1,value:10},
+          angle:{min:40,max:70,step:1,value:66},
+          g:{min:5,max:15,step:0.1,value:9.8}
+        },
+        draw: ({vars})=>{
+          drawGrid();
+          const v = vars.velocity, th = vars.angle * Math.PI/180, g = vars.g;
+          const vx = v*Math.cos(th), vy = v*Math.sin(th);
+
+          // compute raw trajectory (unshifted)
+          let raw = [];
+          for (let tt = 0; tt < 20; tt += 0.02){
+            const x = vx*tt;
+            const y = vy*tt - 0.5*g*tt*tt;
+            raw.push({x,y});
+            if (y < -5) break;
+          }
+          while (raw.length && raw[raw.length-1].y < 0) raw.pop();
+          if (raw.length < 2) raw = [{x:0,y:0},{x:0,y:0}];
+
+          // shift so midpoint is centered at x=0
+          const xMid = (raw[0].x + raw[raw.length-1].x) / 2;
+          const pts = raw.map(p => ({ x: p.x - xMid, y: p.y }));
+
+          // draw
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath();
+          pts.forEach((p,i)=>{
+            const s = screen(p.x,p.y); if (i === 0) ctx.moveTo(s.x,s.y); else ctx.lineTo(s.x,s.y);
+          }); ctx.stroke();
+
+          // animate ball along timeline
+          const flightT = (raw.length - 1) * 0.02;
+          const elapsed = (Date.now() - animStart) / 1000;
+          const tplay = Math.min(elapsed, flightT);
+          const idx = Math.floor(tplay / 0.02);
+          const frac = (tplay % 0.02) / 0.02;
+          const p1 = pts[Math.max(0, Math.min(idx, pts.length-1))] || pts[0];
+          const p2 = pts[Math.max(0, Math.min(idx+1, pts.length-1))] || pts[pts.length-1];
+          const bx = p1.x + (p2.x - p1.x)*frac;
+          const by = p1.y + (p2.y - p1.y)*frac;
+          const b = screen(bx,by);
+          // draw ball
+          ctx.fillStyle = '#ffd48b';
+          ctx.beginPath(); ctx.arc(b.x, b.y, 8, 0, Math.PI*2); ctx.fill();
+
+          // annotate
+          const s0 = pts[0], sE = pts[pts.length-1];
+          annotatePoint(s0.x, s0.y, `Start (${s0.x.toFixed(2)},${s0.y.toFixed(2)})`);
+          annotatePoint(sE.x, sE.y, `End (${sE.x.toFixed(2)},${sE.y.toFixed(2)})`);
+          setEquation(`x(t)=${(vx).toFixed(2)}t - ${xMid.toFixed(2)},\\quad y(t)=${(vy).toFixed(2)}t-\\tfrac{1}{2}${g}t^{2}`);
+        }
+      },
+
+      circle: {
+        title:'Circle Geometry',
+        vars:{ R:{min:10,max:200,step:1,value:80} },
+        draw: ({vars})=>{
+          drawGrid();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+          const c = screen(0,0);
+          ctx.beginPath(); ctx.arc(c.x, c.y, vars.R, 0, Math.PI*2); ctx.stroke();
+          setEquation(`x^{2}+y^{2}=${(vars.R*vars.R).toFixed(0)}`);
+          annotatePoint(vars.R/scale, 0, `(${vars.R.toFixed(1)},0)`);
+        }
+      },
+
+      harmonic: {
+        title:'Simple Harmonic Motion',
+        vars:{ A:{min:1,max:7.5,step:0.1,value:4}, omega:{min:0.5,max:5,step:0.1,value:1.4} },
+        draw: ({vars,t})=>{
+          drawGrid();
+          const x = vars.A * Math.cos(vars.omega * t);
+          const s = screen(x,0);
+          ctx.fillStyle = '#ffd6e0';
+          ctx.beginPath(); ctx.arc(s.x,s.y,10,0,Math.PI*2); ctx.fill();
+          setEquation(`x(t)=${vars.A}\\cos(${vars.omega}t)`);
+        }
+      },
+
+      electric: {
+        title:'Electric Field (point charges)',
+        vars:{
+          q1:{min:-10,max:10,step:1,value:1},
+          q2:{min:-10,max:10,step:1,value:-1},
+          sep:{min:20,max:200,step:1,value:120}
+        },
+        draw: ({vars})=>{
+          drawGrid();
+          const sepUnits = vars.sep / scale;
+          const p1 = {x: -sepUnits/2, y:0}, p2 = {x: sepUnits/2, y:0};
+          drawCharge(p1, vars.q1); drawCharge(p2, vars.q2);
+
+          for (let gx = -10; gx <= 10; gx += 0.7){
+            for (let gy = -6; gy <= 6; gy += 0.7){
+              let Ex = 0, Ey = 0;
+              const rx = gx, ry = gy;
+              [{x:p1.x,y:p1.y,q:vars.q1},{x:p2.x,y:p2.y,q:vars.q2}].forEach(c=>{
+                const dx = rx - c.x, dy = ry - c.y;
+                const r2 = dx*dx + dy*dy + 0.001;
+                const inv = c.q / (r2);
+                Ex += inv * dx; Ey += inv * dy;
+              });
+              const mag = Math.sqrt(Ex*Ex + Ey*Ey);
+              if (mag > 0){
+                const nx = Ex/mag, ny = Ey/mag;
+                const s0 = screen(rx,ry);
+                ctx.strokeStyle = 'rgba(170,176,255,0.7)';
+                ctx.beginPath();
+                ctx.moveTo(s0.x, s0.y);
+                ctx.lineTo(s0.x + nx*12, s0.y - ny*12);
+                ctx.stroke();
+              }
+            }
+          }
+          setEquation(`\\vec{E}(\\vec{r})=k\\sum_{i}\\frac{q_{i}}{|\\vec{r}-\\vec{r_{i}}|^{2}}\\hat{r}`);
+        }
+      }
+    };
+
+    /* ---------- UI Build ---------- */
+    const selector = document.getElementById('problemSelector');
+
+    Object.keys(problems).forEach((k,i) => {
+      const btn = document.createElement('div');
+      btn.className = 'problem-btn' + (k === current ? ' active' : '');
+      btn.textContent = problems[k].title;
+      btn.onclick = () => {
+        document.querySelectorAll('.problem-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        current = k;
+        buildSidebar();
+        resetAnim();
+      };
+      selector.appendChild(btn);
+    });
+
+    function buildSidebar(){
+      const sb = document.getElementById('sidebar');
+      sb.innerHTML = '';
+      const P = problems[current];
+      const h = document.createElement('h4'); h.innerText = P.title;
+      sb.appendChild(h);
+
+      const wrap = document.createElement('div');
+      for (const k in P.vars){
+        const o = P.vars[k];
+        const block = document.createElement('div'); block.className = 'slider-block';
+        block.innerHTML = `<div class='slider-row'><div>${k}</div><div id='val-${k}'>${o.value}</div></div>
+          <div class='range-wrap'><div class='range-fill' id='fill-${k}'></div>
+          <input id='rng-${k}' type='range' min='${o.min}' max='${o.max}' step='${o.step}' value='${o.value}'></div>`;
+        wrap.appendChild(block);
+      }
+      sb.appendChild(wrap);
+
+      for (const k in P.vars){
+        const inp = document.getElementById('rng-'+k);
+        if (!inp) continue;
+        inp.addEventListener('input', e=>{
+          problems[current].vars[k].value = parseFloat(e.target.value);
+          document.getElementById('val-'+k).innerText = e.target.value;
+          updateFill(k);
+          resetAnim();
+        });
+        updateFill(k);
+      }
+    }
+
+    function updateFill(k){
+      const r = document.getElementById('rng-'+k);
+      if (!r) return;
+      const pct = (r.value - r.min) / (r.max - r.min) * 100;
+      const f = document.getElementById('fill-'+k);
+      if (f) f.style.width = pct + '%';
+    }
+
+    function resetAnim(){ animStart = Date.now(); }
+
+    // Initialize sidebar & fills
+    buildSidebar();
+    resetAnim();
+    Object.keys(problems[current].vars).forEach(updateFill);
+
+    /* ---------- Main Loop ---------- */
+    function loop(){
+      // ensure canvas size matches displayed size if something changed (handles orientation changes)
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== Math.floor(rect.width) || canvas.height !== Math.floor(rect.height)) {
+        vizResize();
+      }
+
+      ctx.clearRect(0,0,W,H);
+      const P = problems[current];
+      const vars = Object.fromEntries(Object.entries(P.vars).map(([k,v]) => [k, v.value]));
+      try { P.draw({vars, t: time}); } catch(e){ console.error(e); }
+      time += 0.02;
+      requestAnimationFrame(loop);
+    }
+
+    // kickoff
+    loop();
+
+    /* ---------- MathJax initial typeset (best-effort) ---------- */
+    if (window.MathJax && window.MathJax.startup) {
+      MathJax.startup.promise.then(() => MathJax.typesetPromise()).catch(()=>{});
+    }
+
+    // ensure visualizer is correctly sized at load
+    window.addEventListener('load', () => { vizResize(); buildSidebar(); });
 </script>
 </body>
 </html>
