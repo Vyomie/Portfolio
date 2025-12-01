@@ -1151,8 +1151,8 @@ function getDigitInputVector() {
   tmp.height = 16;
   const tctx = tmp.getContext('2d');
 
-  tctx.drawImage(digitCanvas, 0, 0, 28, 28);
-  const imgData = tctx.getImageData(0, 0, 28, 28).data;
+  tctx.drawImage(digitCanvas, 0, 0, 16, 16);
+  const imgData = tctx.getImageData(0, 0, 16, 16).data;
 
   const v = [];
   for (let i = 0; i < imgData.length; i += 4) {
@@ -1707,4 +1707,5 @@ fetchLatestCommits();
 </script>
 </body>
 </html>
+
 
