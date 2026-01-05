@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.vyxm.in/playground/ml" />
+<meta property="og:title" content="Interactive ML Visualizer - Vyomie" />
+<meta property="og:description" content="Explore interactive ML visualizations." />
+<meta property="og:site_name" content="Interactive ML Visualizer - Vyomie" />
+  
+
+<meta property="og:image:alt" content="Interactive ML Visualizer - Vyomie" />
+
+
+<meta name="theme-color" content="#f5f5f5" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Teenage Works — High-End ML Products by Teenagers" />
+<meta name="twitter:description" content="Explore interactive ML visualizations." />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ML Playground by Vyom</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ---------- Landing page base ---------- */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Inter, system-ui, 'Courier New', monospace;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInNav { from { opacity: 0; transform: translate3d(-50%, 20px, 0); } to { opacity: 1; transform: translate3d(-50%, 0, 0); } }
+    @keyframes floatUp { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+
+    .contact-link { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.18); padding-bottom: 2px; transition: opacity 0.3s; }
+    .contact-link:hover { opacity: 0.7; }
+
+    footer { text-align: center; padding: 60px 20px; opacity: 0.6; animation: fadeIn 2s ease-out; }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+
+    /* ---------- Visualizer styles (merged & responsive) ---------- */
+    :root{ --viz-bg:#050505; --card:#0b0b0d; --muted:#b2beb5; --accent:#dddddd; --glass:rgba(255,255,255,0.04); --slider-track:#222; --slider-thumb:#fff }
+
+    .viz-section {
+      padding: 40px 6vw;
+      max-width: 1200px;
+      margin: 40px auto;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .viz-header { margin-bottom: 10px; }
+    .viz-title { font-size: 2rem; margin: 0 0 6px; font-weight:700; color: var(--accent); }
+    .viz-sub { margin: 0 0 14px; color: var(--muted); }
+
+    .problem-selector { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .problem-btn {
+      background: linear-gradient(180deg,var(--card),#0a0a0a);
+      border:1px solid rgba(255,255,255,0.03);
+      padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:#e9eef6;
+    }
+    .problem-btn.active{ box-shadow:0 6px 20px rgba(109,106,255,0.12); border-color:var(--accent); color:var(--accent) }
+
+    .stage{ display:flex; gap:18px; align-items:flex-start; }
+    .sidebar{ width:260px; flex-shrink:0; padding:14px; box-sizing:border-box; }
+    .slider-block{ margin-bottom:18px; }
+    .slider-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-family: monospace; }
+
+    input[type=range]{ -webkit-appearance:none; width:100%; height:6px; background:transparent; }
+    input[type=range]::-webkit-slider-runnable-track{ height:4px; background:var(--slider-track); border-radius:999px; }
+    input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7px; width:12px; height:12px; border-radius:50%; background:var(--slider-thumb); box-shadow:0 4px 10px rgba(0,0,0,0.5) }
+    .range-wrap{ position:relative; }
+    .range-fill { position:absolute; left:0; top:50%; transform:translateY(-50%); height:6px; border-radius:999px; background:linear-gradient(90deg,var(--accent),#aab0ff); pointer-events:none; width:0 }
+
+    .canvas-frame { flex:1; position:relative; min-width:0; }
+    /* canvas responsive using aspect-ratio, JS synchronizes internal pixel size */
+    #scene { width:100%; height:auto; aspect-ratio: 16/10; background:#030304; border-radius:12px; border:1px solid rgba(255,255,255,0.03); display:block; }
+
+    .equationOverlay { position:absolute; left:50%; top:18px; transform:translateX(-50%); color:#fff; font-family:serif; font-size:18px; background:rgba(0,0,0,0.25); padding:6px 10px; border-radius:8px; z-index:20; pointer-events:none; }
+
+    .note { color:var(--muted); font-size:13px; margin-top:8px; }
+
+    @media(max-width:900px){
+      .stage { flex-direction:column; gap:22px; }
+      .sidebar { width:100%; }
+      #scene { aspect-ratio: 1 / 1; }
+      #manim-guy { width:90px; bottom:8px; left:8px; }
+      .equationOverlay{ font-size:15px; padding:4px 8px; }
+    }
+
+    @media(max-width:450px){
+      #scene { aspect-ratio: 1 / 1.2; }
+    }
+
+  </style>
+  <style>
+#digit-classifier {
+  padding: 60px 10vw;
+  border-top: 1px solid #111;
+}
+
+.digit-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.digit-left, .digit-right {
+  flex: 1 1 280px;
+  min-width: 260px;
+}
+
+#digitCanvas {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: crosshair;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+
+.digit-controls {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.digit-controls button {
+  background: #111;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.digit-controls button:hover {
+  background: #222;
+  border-color: #555;
+}
+
+.digit-hint {
+  margin-top: 8px;
+  font-size: 0.75em;
+  color: var(--muted);
+}
+
+#digitPreview {
+  background: #000;
+  border-radius: 6px;
+  border: 1px solid #333;
+  image-rendering: pixelated;
+}
+
+.digit-preview-block, .digit-activations-block {
+  margin-bottom: 20px;
+}
+
+.digit-preview-title {
+  font-size: 0.85em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.digit-prediction {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.activation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8em;
+}
+
+.activation-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activation-label {
+  width: 18px;
+}
+
+.activation-bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: #111;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.activation-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7f8cff, #aab0ff);
+  transition: width 0.1s linear;
+}
+
+.activation-value {
+  width: 40px;
+  text-align: right;
+  color: var(--muted);
+}
+
+/* Responsive tweak */
+@media (max-width: 800px) {
+  .digit-layout {
+    flex-direction: column;
+  }
+}
+#digit-classifier {
+    position: relative;
+    z-index: 2000;
+}
+
+#digitCanvas {
+    position: relative;
+    z-index: 3000;
+    pointer-events: auto;
+}
+
+    </style>
+
+</head>
+<body>
+  </section>
+
+  <!-- ========== NEW: Interactive Pandora Visualizer (merged) ========== -->
+  <section class="viz-section" id="visualizer">
+    <div class="viz-header">
+      <div class="viz-title">Interactive ML Activation Functions</div>
+      <div class="viz-sub">Interactive playground to visualize common Machine Learning activation functions(i.e. Linear, ReLU, Sigmoid, Tanh</div>
+    </div>
+
+    <div class="problem-selector" id="problemSelector"></div>
+
+    <div class="stage">
+      <div class="sidebar" id="sidebar"></div>
+
+      <div class="canvas-frame">
+        <div id="equationOverlay" class="equationOverlay">\(\text{Select a problem}\)</div>
+        <!-- visualizer canvas -->
+        <canvas id="scene" width="900" height="520"></canvas>
+        <img id="manim-guy" src="piman.png" alt="manim guy"/>
+        <div class="note">Grid units map to math units; origin (0,0) is at canvas center.</div>
+      </div>
+    </div>
+  </section>
+
+<!--Digit Classifier-->
+<section id="digit-classifier" class="fade">
+  <h2>Digit Classifier (MNIST · 16×16)</h2>
+  <p style="color:var(--muted);max-width:600px;">
+    Draw a digit (0–9) in the box. The model runs in your browser using weights trained on MNIST
+    and shows live activations for each class.
+  </p>
+
+  <div class="digit-layout">
+    <div class="digit-left">
+      <canvas id="digitCanvas" width="256" height="256"></canvas>
+      <div class="digit-controls">
+        <button id="clearDigit">Clear</button>
+        <button id="predictDigit">Predict</button>
+      </div>
+      <div class="digit-hint">Tip: Draw in the center with thick strokes.</div>
+    </div>
+
+    <div class="digit-right">
+      <div class="digit-preview-block">
+        <div class="digit-preview-title">16×16 Input</div>
+        <canvas id="digitPreview" width="160" height="160"></canvas>
+      </div>
+
+      <div class="digit-activations-block">
+        <div class="digit-preview-title">Output Activations</div>
+        <div id="digitPrediction" class="digit-prediction">Prediction: —</div>
+        <div id="activationList" class="activation-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <footer>
+    © 2025 Vyom Nishant Patel — Built with curiosity, code and caffine lol.
+  </footer>
+
+  <script>
+    /* ---------- Scroll reveal functionality ---------- */
+    const reveals = document.querySelectorAll('.reveal');
+    function revealOnScroll() {
+      for (let el of reveals) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 80) el.classList.add('visible');
+      }
+    }
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('load', revealOnScroll);
+
+    /* ---------- Visualizer JS ---------- */
+    // Grab elements after DOM load
+    const canvas = document.getElementById('scene');
+    const ctx = canvas.getContext('2d');
+
+    // Start with displayed dimensions; JS keeps canvas pixel size synced
+    let W = 900, H = 520;
+    let scale = 40;          // px per math-unit (will be recalculated)
+    let animStart = Date.now();
+    let time = 0;
+    let current = 'linear';
+
+    // Resize: sync canvas pixel dimensions to its displayed size and adjust math scale
+    function vizResize(){
+      const rect = canvas.getBoundingClientRect();
+      // set internal pixel buffer to match displayed size (for crispness on high-dpi, we could multiply by devicePixelRatio if desired)
+      W = canvas.width  = Math.max(300, Math.floor(rect.width));
+      H = canvas.height = Math.max(200, Math.floor(rect.height));
+
+      // choose scale proportional to width; this keeps graph aspect correct and prevents squish
+      // We aim to show roughly 25 math-units across the width on desktop; adjust for mobile smaller widths
+      const targetUnitsAcross = Math.max(16, Math.min(30, W / 40)); // heuristic
+      scale = W / targetUnitsAcross;
+    }
+
+    window.addEventListener('resize', vizResize);
+    vizResize();
+
+    // coordinate transforms
+    function screen(x,y){ return { x: W/2 + x*scale, y: H/2 - y*scale }; }
+
+    function drawGrid(){
+      // background
+      ctx.fillStyle = '#030304';
+      ctx.fillRect(0,0,W,H);
+
+      // grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+
+      // vertical lines: start from canvas center offset
+      const offsetX = (W/2) % scale;
+      for(let x=offsetX; x<W; x+=scale){
+        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+      }
+      const offsetY = (H/2) % scale;
+      for(let y=offsetY; y<H; y+=scale){
+        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+      }
+      // origin dot
+      const o = screen(0,0);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(o.x,o.y,3,0,Math.PI*2); ctx.fill();
+    }
+
+    function annotatePoint(x,y,label){
+      const p = screen(x,y);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
+      ctx.font = '12px monospace';
+      ctx.fillText(label, p.x + 8, p.y - 6);
+    }
+
+    function setEquation(latex){
+      const el = document.getElementById('equationOverlay');
+      el.innerHTML = '\\(' + latex + '\\)';
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
+    }
+
+    // drawCharge helper
+    function drawCharge(p,q){
+      const s = screen(p.x,p.y);
+      ctx.fillStyle = q>0? 'rgba(255,120,120,0.95)':'rgba(120,160,255,0.95)';
+      ctx.beginPath(); ctx.arc(s.x,s.y,10,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font='12px monospace';
+      ctx.fillText(q>0?`+${q}`:`${q}`, s.x-8, s.y+4);
+    }
+
+    // Problems
+    const problems = {
+  linear: {
+    title: 'Linear Activation',
+    vars: {
+      x: { min: -10, max: 10, step: 0.05, value: 0 },
+      m: { min: -3, max: 3, step: 0.05, value: 1 },
+      b: { min: -5, max: 5, step: 0.05, value: 0 }
+    },
+    draw: ({ vars }) => {
+      drawGrid();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      for (let x = -10; x <= 10; x += 0.02) {
+        const y = vars.m * x + vars.b;
+        const s = screen(x, y);
+        if (x === -10) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      }
+      ctx.stroke();
+
+      const y = vars.m * vars.x + vars.b;
+      annotatePoint(vars.x, y, `(${vars.x.toFixed(2)}, ${y.toFixed(2)})`);
+      setEquation(`y = ${vars.m}x + ${vars.b}`);
+    }
+  },
+
+  relu: {
+    title: 'ReLU / Leaky ReLU',
+    vars: {
+      x: { min: -10, max: 10, step: 0.05, value: 0 },
+      alpha: { min: 0, max: 0.5, step: 0.01, value: 0 }
+    },
+    draw: ({ vars }) => {
+      drawGrid();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      for (let x = -10; x <= 10; x += 0.02) {
+        const y = x >= 0 ? x : vars.alpha * x;
+        const s = screen(x, y);
+        if (x === -10) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      }
+      ctx.stroke();
+
+      const y = vars.x >= 0 ? vars.x : vars.alpha * vars.x;
+      annotatePoint(vars.x, y, `(${vars.x.toFixed(2)}, ${y.toFixed(2)})`);
+      setEquation(`f(x)=\\max(x, \\alpha x),\\; \\alpha=${vars.alpha}`);
+    }
+  },
+
+  sigmoid: {
+    title: 'Sigmoid',
+    vars: {
+      x: { min: -10, max: 10, step: 0.05, value: 0 },
+      k: { min: 0.1, max: 5, step: 0.05, value: 1 }
+    },
+    draw: ({ vars }) => {
+      drawGrid();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      for (let x = -10; x <= 10; x += 0.02) {
+        const y = 1 / (1 + Math.exp(-vars.k * x));
+        const s = screen(x, y);
+        if (x === -10) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      }
+      ctx.stroke();
+
+      const y = 1 / (1 + Math.exp(-vars.k * vars.x));
+      annotatePoint(vars.x, y, `(${vars.x.toFixed(2)}, ${y.toFixed(3)})`);
+      setEquation(`\\sigma(x)=\\frac{1}{1+e^{-kx}},\\; k=${vars.k}`);
+    }
+  },
+
+  tanh: {
+    title: 'Tanh',
+    vars: {
+      x: { min: -10, max: 10, step: 0.05, value: 0 },
+      k: { min: 0.1, max: 5, step: 0.05, value: 1 }
+    },
+    draw: ({ vars }) => {
+      drawGrid();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      for (let x = -10; x <= 10; x += 0.02) {
+        const y = Math.tanh(vars.k * x);
+        const s = screen(x, y);
+        if (x === -10) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      }
+      ctx.stroke();
+
+      const y = Math.tanh(vars.k * vars.x);
+      annotatePoint(vars.x, y, `(${vars.x.toFixed(2)}, ${y.toFixed(3)})`);
+      setEquation(`\\tanh(kx),\\; k=${vars.k}`);
+    }
+  }
+};
+
+
+    /* ---------- UI Build ---------- */
+    const selector = document.getElementById('problemSelector');
+
+    Object.keys(problems).forEach((k,i) => {
+      const btn = document.createElement('div');
+      btn.className = 'problem-btn' + (k === current ? ' active' : '');
+      btn.textContent = problems[k].title;
+      btn.onclick = () => {
+        document.querySelectorAll('.problem-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        current = k;
+        buildSidebar();
+        resetAnim();
+      };
+      selector.appendChild(btn);
+    });
+
+    function buildSidebar(){
+      const sb = document.getElementById('sidebar');
+      sb.innerHTML = '';
+      const P = problems[current];
+      const h = document.createElement('h4'); h.innerText = P.title;
+      sb.appendChild(h);
+
+      const wrap = document.createElement('div');
+      for (const k in P.vars){
+        const o = P.vars[k];
+        const block = document.createElement('div'); block.className = 'slider-block';
+        block.innerHTML = `<div class='slider-row'><div>${k}</div><div id='val-${k}'>${o.value}</div></div>
+          <div class='range-wrap'><div class='range-fill' id='fill-${k}'></div>
+          <input id='rng-${k}' type='range' min='${o.min}' max='${o.max}' step='${o.step}' value='${o.value}'></div>`;
+        wrap.appendChild(block);
+      }
+      sb.appendChild(wrap);
+
+      for (const k in P.vars){
+        const inp = document.getElementById('rng-'+k);
+        if (!inp) continue;
+        inp.addEventListener('input', e=>{
+          problems[current].vars[k].value = parseFloat(e.target.value);
+          document.getElementById('val-'+k).innerText = e.target.value;
+          updateFill(k);
+          resetAnim();
+        });
+        updateFill(k);
+      }
+    }
+
+    function updateFill(k){
+      const r = document.getElementById('rng-'+k);
+      if (!r) return;
+      const pct = (r.value - r.min) / (r.max - r.min) * 100;
+      const f = document.getElementById('fill-'+k);
+      if (f) f.style.width = pct + '%';
+    }
+
+    function resetAnim(){ animStart = Date.now(); }
+
+    // Initialize sidebar & fills
+    buildSidebar();
+    resetAnim();
+    Object.keys(problems[current].vars).forEach(updateFill);
+
+    /* ---------- Main Loop ---------- */
+    function loop(){
+      // ensure canvas size matches displayed size if something changed (handles orientation changes)
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== Math.floor(rect.width) || canvas.height !== Math.floor(rect.height)) {
+        vizResize();
+      }
+
+      ctx.clearRect(0,0,W,H);
+      const P = problems[current];
+      const vars = Object.fromEntries(Object.entries(P.vars).map(([k,v]) => [k, v.value]));
+      try { P.draw({vars, t: time}); } catch(e){ console.error(e); }
+      time += 0.02;
+      requestAnimationFrame(loop);
+    }
+
+    // kickoff
+    loop();
+
+    /* ---------- MathJax initial typeset (best-effort) ---------- */
+    if (window.MathJax && window.MathJax.startup) {
+      MathJax.startup.promise.then(() => MathJax.typesetPromise()).catch(()=>{});
+    }
+
+    // ensure visualizer is correctly sized at load
+    window.addEventListener('load', () => { vizResize(); buildSidebar(); });
+  </script>
+
+<script>
+/* ===== Digit Classifier ===== */
+const digitCanvas = document.getElementById('digitCanvas');
+const digitCtx = digitCanvas.getContext('2d');
+const previewCanvas = document.getElementById('digitPreview');
+const previewCtx = previewCanvas.getContext('2d');
+
+let drawing = false;
+let lastX = 0, lastY = 0;
+
+// Init drawing canvas
+function initDigitCanvas() {
+  digitCtx.fillStyle = '#000';
+  digitCtx.fillRect(0, 0, digitCanvas.width, digitCanvas.height);
+}
+initDigitCanvas();
+
+// Mouse / touch drawing
+function getPos(e) {
+  const rect = digitCanvas.getBoundingClientRect();
+  if (e.touches && e.touches[0]) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  } else {
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  const pos = getPos(e);
+  lastX = pos.x;
+  lastY = pos.y;
+}
+
+function draw(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  digitCtx.strokeStyle = '#fff';
+  digitCtx.lineWidth = 22;
+  digitCtx.lineCap = 'round';
+  digitCtx.lineJoin = 'round';
+  digitCtx.beginPath();
+  digitCtx.moveTo(lastX, lastY);
+  digitCtx.lineTo(pos.x, pos.y);
+  digitCtx.stroke();
+  lastX = pos.x;
+  lastY = pos.y;
+
+  runDigitInference(); // live-ish
+}
+
+function endDraw(e) {
+  if (!drawing) return;
+  drawing = false;
+  runDigitInference();
+}
+
+digitCanvas.addEventListener('mousedown', startDraw);
+digitCanvas.addEventListener('mousemove', draw);
+digitCanvas.addEventListener('mouseup', endDraw);
+digitCanvas.addEventListener('mouseleave', endDraw);
+
+digitCanvas.addEventListener('touchstart', startDraw, {passive:false});
+digitCanvas.addEventListener('touchmove', draw, {passive:false});
+digitCanvas.addEventListener('touchend', endDraw);
+digitCanvas.addEventListener('touchcancel', endDraw);
+
+// Controls
+document.getElementById('clearDigit').addEventListener('click', () => {
+  initDigitCanvas();
+  drawPreview();
+  showBlankActivations();
+});
+
+document.getElementById('predictDigit').addEventListener('click', () => {
+  runDigitInference();
+});
+
+// --- Model weights ---
+let MLP_WEIGHTS = null;
+
+async function loadDigitWeights() {
+  try {
+    const res = await fetch('./mnist_mlp_16x16.json');
+    if (!res.ok) throw new Error('Cannot load weight JSON');
+    MLP_WEIGHTS = await res.json();
+    console.log('Loaded weights:', MLP_WEIGHTS);
+    showBlankActivations();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('digitPrediction').textContent =
+      'Prediction: error loading weights';
+  }
+}
+loadDigitWeights();
+
+// Utility: softmax
+function softmax(arr) {
+  const max = Math.max(...arr);
+  const exps = arr.map(v => Math.exp(v - max));
+  const sum = exps.reduce((a,b)=>a+b,0);
+  return exps.map(v => v / sum);
+}
+
+// Get 16x16 input vector from drawing
+function getDigitInputVector() {
+  // Downsample to 16x16 via an offscreen canvas
+  const tmp = document.createElement('canvas');
+  tmp.width = 16;
+  tmp.height = 16;
+  const tctx = tmp.getContext('2d');
+
+  tctx.drawImage(digitCanvas, 0, 0, 16, 16);
+  const imgData = tctx.getImageData(0, 0, 16, 16).data;
+
+  const v = [];
+  for (let i = 0; i < imgData.length; i += 4) {
+    const r = imgData[i];
+    const g = imgData[i+1];
+    const b = imgData[i+2];
+    const gray = (r + g + b) / (3 * 255); // 0..1
+    v.push(gray);
+  }
+
+  // Update visible preview
+  drawPreviewFromTmp(tmp);
+
+  return v;
+}
+
+function drawPreview() {
+  // when cleared
+  previewCtx.fillStyle = '#000';
+  previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+}
+
+function drawPreviewFromTmp(tmp) {
+  previewCtx.imageSmoothingEnabled = false;
+  previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+  previewCtx.drawImage(tmp, 0, 0, previewCanvas.width, previewCanvas.height);
+}
+
+// Forward pass through 1-hidden-layer MLP
+function mlpForward(x) {
+  if (!MLP_WEIGHTS) return null;
+
+  const { W1, b1, W2, b2 } = MLP_WEIGHTS;
+  const hiddenSize = b1.length;
+
+  // hidden = relu(W1 x + b1)
+  const h = new Array(hiddenSize).fill(0);
+  for (let i = 0; i < hiddenSize; i++) {
+    let sum = 0;
+    for (let j = 0; j < x.length; j++) {
+      sum += W1[j][i] * x[j];
+    }
+    sum += b1[i];
+    h[i] = Math.max(0, sum);
+  }
+
+  // output = W2 h + b2
+  const outSize = b2.length;
+  const logits = new Array(outSize).fill(0);
+  for (let k = 0; k < outSize; k++) {
+    let sum = 0;
+    for (let i = 0; i < hiddenSize; i++) {
+      sum += W2[i][k] * h[i];
+    }
+    sum += b2[k];
+    logits[k] = sum;
+  }
+
+  const probs = softmax(logits);
+  return probs;
+}
+
+// Build activation UI
+const activationList = document.getElementById('activationList');
+function buildActivationUI() {
+  activationList.innerHTML = '';
+  for (let d = 0; d < 10; d++) {
+    const row = document.createElement('div');
+    row.className = 'activation-row';
+
+    const label = document.createElement('div');
+    label.className = 'activation-label';
+    label.textContent = d;
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'activation-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'activation-bar';
+    bar.id = 'act-bar-' + d;
+    barWrap.appendChild(bar);
+
+    const val = document.createElement('div');
+    val.className = 'activation-value';
+    val.id = 'act-val-' + d;
+    val.textContent = '0.00';
+
+    row.appendChild(label);
+    row.appendChild(barWrap);
+    row.appendChild(val);
+    activationList.appendChild(row);
+  }
+}
+buildActivationUI();
+
+function showBlankActivations() {
+  for (let d = 0; d < 10; d++) {
+    const bar = document.getElementById('act-bar-' + d);
+    const val = document.getElementById('act-val-' + d);
+    if (bar) bar.style.width = '0%';
+    if (val) val.textContent = '0.00';
+  }
+  document.getElementById('digitPrediction').textContent = 'Prediction: —';
+}
+
+// Run inference & update activations
+function runDigitInference() {
+  if (!MLP_WEIGHTS) return;
+  const x = getDigitInputVector();
+  const probs = mlpForward(x);
+  if (!probs) return;
+
+  let bestIdx = 0;
+  let bestVal = probs[0];
+  probs.forEach((p, i) => {
+    if (p > bestVal) {
+      bestVal = p;
+      bestIdx = i;
+    }
+  });
+
+  for (let d = 0; d < 10; d++) {
+    const bar = document.getElementById('act-bar-' + d);
+    const val = document.getElementById('act-val-' + d);
+    const p = probs[d];
+    if (bar) bar.style.width = (p * 100).toFixed(1) + '%';
+    if (val) val.textContent = p.toFixed(2);
+  }
+
+  document.getElementById('digitPrediction').textContent =
+    'Prediction: ' + bestIdx + ' (p=' + bestVal.toFixed(2) + ')';
+}
+
+// Init preview
+drawPreview();
+
+</script>
+
+</body>
+</html>
