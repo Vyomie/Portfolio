@@ -255,7 +255,6 @@
         <div id="equationOverlay" class="equationOverlay">\(\text{Select a problem}\)</div>
         <!-- visualizer canvas -->
         <canvas id="scene" width="900" height="520"></canvas>
-        <img id="manim-guy" src="piman.png" alt="manim guy"/>
         <div class="note">Grid units map to math units; origin (0,0) is at canvas center.</div>
       </div>
     </div>
@@ -681,7 +680,7 @@ let MLP_WEIGHTS = null;
 
 async function loadDigitWeights() {
   try {
-    const res = await fetch('./mnist_mlp_16x16.json');
+    const res = await fetch('mnist_mlp_16x16.json');
     if (!res.ok) throw new Error('Cannot load weight JSON');
     MLP_WEIGHTS = await res.json();
     console.log('Loaded weights:', MLP_WEIGHTS);
@@ -850,4 +849,5 @@ drawPreview();
 </script>
 
 </body>
+
 </html>
