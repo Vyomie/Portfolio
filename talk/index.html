@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Talk to Vyom</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #000;
+  --fg: #f0f0f0;
+  --muted: #888;
+  --accent: #ff3b3b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "JetBrains Mono", monospace;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ================= NAVBAR ================= */
+#navbar {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  backdrop-filter: blur(14px);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 26px;
+  padding: 18px 56px;
+  z-index: 1000;
+  animation: floatNavbar 4s ease-in-out infinite;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+  max-width: 90%;
+}
+
+#navbar ul {
+  display: flex;
+  gap: 48px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#navbar ul li a {
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+#navbar ul li a:hover { color: var(--muted); }
+
+@keyframes floatNavbar {
+  0%,100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -8px); }
+}
+
+/* ================= CENTER ================= */
+.app {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center {
+  width: 75%;
+  max-width: 720px;
+  text-align: center;
+}
+
+/* ================= TITLE ================= */
+h1 {
+  margin-top: 140px;
+  margin-bottom: 36px;
+  font-size: 42px;
+  font-weight: 600;
+}
+
+h1 span { color: var(--accent); }
+
+/* ================= RESPONSE ================= */
+#response-wrap {
+  position: relative;
+  height: 340px;
+  margin-bottom: 36px;
+  overflow: hidden;
+}
+
+#response {
+  height: 100%;
+  font-size: 22px;
+  line-height: 1.9;
+  padding: 24px 0;
+}
+
+#response-wrap::before,
+#response-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 70px;
+  pointer-events: none;
+}
+
+#response-wrap::before {
+  top: 0;
+  background: linear-gradient(to bottom, black, transparent);
+}
+
+#response-wrap::after {
+  bottom: 0;
+  background: linear-gradient(to top, black, transparent);
+}
+
+/* ================= BUTTON ================= */
+button {
+  width: 100%;
+  padding: 30px;
+  font-size: 22px;
+  background: #111;
+  color: var(--fg);
+  border: 1px solid #222;
+  border-radius: 22px;
+  cursor: pointer;
+}
+
+button.recording {
+  background: var(--accent);
+  color: #000;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 18px;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+/* ================= MOBILE OVERSCALE ================= */
+@media (max-width: 768px) {
+  .center { width: 90%; }
+
+  h1 { font-size: 52px; }
+
+  #response-wrap { height: 420px; }
+
+  #response {
+    font-size: 26px;
+    line-height: 2;
+  }
+
+  button {
+    padding: 36px;
+    font-size: 26px;
+  }
+
+  .status { font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 56px; }
+
+  #response { font-size: 28px; }
+
+  button {
+    padding: 40px;
+    font-size: 28px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <ul>
+    <li><a href="https://www.vyxm.in">Home</a></li>
+    <li><a href="https://www.vyxm.in/projects">Projects</a></li>
+    <li><a href="https://www.vyxm.in/blogs">Blogs</a></li>
+    <li><a href="https://www.vyxm.in/talk">Myself</a></li>
+  </ul>
+</nav>
+
+<div class="app">
+  <div class="center">
+    <h1>TALK TO <span>VYOM</span></h1>
+
+    <div id="response-wrap">
+      <div id="response"></div>
+    </div>
+
+    <button id="talk">HOLD TO TALK</button>
+    <div id="status" class="status">idle</div>
+  </div>
+</div>
+
+<script>
+const btn = document.getElementById("talk");
+const status = document.getElementById("status");
+const responseEl = document.getElementById("response");
+
+let recorder, chunks = [];
+let busy = false;
+const RATE_LIMIT = 3000;
+let lastRequest = 0;
+
+function typeText(text, audioDuration) {
+  responseEl.innerHTML = "";
+  const words = text.split(" ");
+  const delay = audioDuration / words.length;
+  let i = 0;
+
+  function next() {
+    if (i >= words.length) return;
+    responseEl.innerHTML += (i === 0 ? "" : " ") + words[i];
+    let extra = words[i].endsWith(".") ? 300 : 0;
+    i++;
+    setTimeout(next, delay + extra);
+  }
+  next();
+}
+
+async function startRec() {
+  if (busy) return;
+  if (Date.now() - lastRequest < RATE_LIMIT) {
+    status.innerText = "slow down";
+    return;
+  }
+
+  chunks = [];
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.start();
+
+  btn.classList.add("recording");
+  status.innerText = "listening...";
+}
+
+function stopRec() {
+  if (!recorder || busy) return;
+
+  recorder.stop();
+  btn.classList.remove("recording");
+  btn.disabled = true;
+  busy = true;
+  status.innerText = "thinking...";
+
+  recorder.onstop = async () => {
+    lastRequest = Date.now();
+
+    const blob = new Blob(chunks, { type: "audio/wav" });
+    const form = new FormData();
+    form.append("audio", blob);
+
+    const res = await fetch("https://api.vyxm.in/myself/", {
+      method: "POST",
+      body: form
+    });
+
+    const data = await res.json();
+
+    status.innerText = "speaking...";
+    const audio = new Audio("data:audio/mp3;base64," + data.audio);
+
+    audio.onloadedmetadata = () => {
+      typeText(data.reply, audio.duration * 1000);
+    };
+
+    audio.onended = () => {
+      status.innerText = "idle";
+      btn.disabled = false;
+      busy = false;
+    };
+
+    audio.play();
+  };
+}
+
+btn.onmousedown = startRec;
+btn.onmouseup = stopRec;
+btn.ontouchstart = e => { e.preventDefault(); startRec(); };
+btn.ontouchend = e => { e.preventDefault(); stopRec(); };
+</script>
+
+</body>
+</html>
+
+
