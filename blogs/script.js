@@ -1,55 +1,88 @@
 document.addEventListener("DOMContentLoaded", function () {
   const blogList = document.getElementById("blogList");
 
-  const pdfs = [
-    "projectile_with_spin.pdf",
-    "effective_microscopic_de_broglie_waves.pdf",
-    "probabilistic_approach_to_goldbach’s_conjecture.pdf"
+  // Blog metadata. `file` is the PDF inside blog-pdfs/.
+  // The thumbnail is auto-detected from the matching image (same base name).
+  const blogs = [
+    {
+      file: "projectile_with_spin.pdf",
+      title: "Projectile Motion with Spin",
+      category: "Physics",
+      date: "2025",
+      desc: "Modelling the trajectory of a spinning projectile, accounting for the Magnus effect and drag."
+    },
+    {
+      file: "effective_microscopic_de_broglie_waves.pdf",
+      title: "Effective Microscopic de Broglie Waves",
+      category: "Quantum Physics",
+      date: "2025",
+      desc: "An exploration of effective de Broglie wavelengths at microscopic scales and their implications."
+    },
+    {
+      file: "probabilistic_approach_to_goldbach’s_conjecture.pdf",
+      title: "A Probabilistic Approach to Goldbach’s Conjecture",
+      category: "Mathematics",
+      date: "2025",
+      desc: "Using probabilistic heuristics to reason about the distribution of Goldbach partitions."
+    }
   ];
 
-  const imageExtensions = [".webp", ".png", ".jpg"];
+  const imageExtensions = [".webp", ".png", ".jpg", ".jpeg"];
 
+  // Try each extension until an image loads; otherwise return null.
   function findValidImage(baseFile, callback) {
     let index = 0;
 
     function tryNext() {
       if (index >= imageExtensions.length) {
-        callback(null); // No image found
+        callback(null);
         return;
       }
-
       const img = new Image();
-      const ext = imageExtensions[index];
-      const src = `blog-pdfs/${baseFile}${ext}`;
-      img.src = src;
-
+      const src = `blog-pdfs/${baseFile}${imageExtensions[index]}`;
       img.onload = () => callback(src);
       img.onerror = () => {
         index++;
         tryNext();
       };
+      img.src = src;
     }
 
     tryNext();
   }
 
-  pdfs.forEach(file => {
-    const baseName = file.replace(".pdf", "").replace(/_/g, " ");
-    const title = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-    const baseFile = file.replace(".pdf", "");
-    const pdfPath = `blog-pdfs/${file}`;
+  blogs.forEach(blog => {
+    const baseFile = blog.file.replace(/\.pdf$/, "");
+    const pdfPath = `blog-pdfs/${blog.file}`;
 
     findValidImage(baseFile, imageSrc => {
       const card = document.createElement("div");
       card.className = "blog-card";
 
+      const thumb = imageSrc
+        ? `<img class="thumb" src="${imageSrc}" alt="${blog.title}" loading="lazy" />`
+        : `<div class="thumb-fallback">PDF</div>`;
+
       card.innerHTML = `
-        ${imageSrc ? `<img src="${imageSrc}" alt="${title}" />` : ""}
-        <div class="title">${title}</div>
+        ${thumb}
+        <div class="body">
+          <div class="meta">${blog.category} · ${blog.date}</div>
+          <div class="title">${blog.title}</div>
+          <div class="desc">${blog.desc}</div>
+          <div class="read">Read PDF →</div>
+        </div>
       `;
 
-      card.onclick = () => window.open(pdfPath, "_blank");
+      card.addEventListener("click", () => window.open(pdfPath, "_blank"));
       blogList.appendChild(card);
     });
   });
+
+  // Fade-in reveal on scroll (matches main site)
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add("visible");
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll(".fade").forEach(el => io.observe(el));
 });
