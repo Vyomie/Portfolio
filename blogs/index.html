@@ -2,24 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VYXM Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vyom — Research Articles & Blogs</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-logo">VYXM</div>
-    <div class="nav-left">
-      <a href="#">Home</a>
-      <a href="#">API</a>
-      <a href="#">About</a>
-    </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <ul>
+      <li><a href="/#hero">Home</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/blogs" class="active">Blogs</a></li>
+      <li><a href="/#footer">Contact</a></li>
+      <li><a href="/talk/">Myself</a></li>
+    </ul>
   </nav>
 
-  <div class="container">
-    <h1>RESEARCH ARTICLES & BLOGS</h1>
+  <!-- GLOBAL ASCII CAT BACKGROUND -->
+  <pre class="ascii-bg" aria-hidden="true">
+                                                                                                                                  $$x+XX
+                                                                                                                               $$x++++X
+                                                                                                                             $X+++++++$
+                                                                                                                          X$X++++++++XX
+                                                                                                                        X$++++++++++x$
+                                                                                                                      X$X+++++++++++$
+                                                                                                                    X$x++++++++++++XX
+                                                                                                                  +$x+++++++++++++xX
+                                                                                                                 $$+++++++++++++++$                         X$$X
+                                                                                                               XX+++++Xx++++++++x$                    +$$$X++++X
+                                                                                                              $X++++x$+++++++++x$X                 $$$x+++++++X$
+                                                                                                            X$x+++++$+++++++++x$x               X$X++++++++++X$
+                                                                                                           $X+++++$X+++++++++x$X            X$$x++++++++++++$$
+                                                                                                          XX+++++XX+++++++++x$$           X$x++++++xX++++++$X
+                                                                                                         $X++++xXx+++++++++X$X         X$x++++++xX+;;x++++X+
+                                                                                                        $X++++XX+x++++++++X$X       X$X++++++xXx;;:+x+++x$X
+                                                                                                       $X++++XX+X++++++++x$       +$+++++++x$;;;;:x++++X$
+                                                                                                      XX++++Xx;+++++++++X$      $X++++++x$x;;;;;;x++++$$
+                                                                                                      $++++Xx;+x+++++++X$     Xx++++++xX+;;;;;;;X++++$$
+                                                                                                     XX++++X+;x+++++++X$    XX++++++x$x;;;;;;;+X++++$X
+                                                                                                     $++++$+;x+++++++$$   X+++++++XX+;;;;;;:;X+++x$$
+                                                                                                    X$+++Xx;;x++++++$X   x++++++X$+;;;;;;;;;X++++$X
+                                                                                                    $x++xX+;X+++++x$X  Xx+++++XX+;;;;;;;:+X++++$$
+                                                                                                    $+++X++x+++++X$   X+++++x$+;;;;;;;;;X++++X$X
+                                                                                                   ;$++xX+;X++++X$   X+++++$X;;;;;;;:;xX+++x$X
+                                                                                                 +X+X++XXx+++++XX   x++++XX;;;;;;;:+X++++X$X
+                                                                         X$$$$$x           +++xX$$Xx$$xXxX$+++XX    x+++Xx;;;;;;:xX+++xX$x
+                                                                        $$&$$xx$$               XX$XXxXXXXxX+XX    X+++X+;;;;++Xx++xX$$X
+                                                                      X$$$&&&$X+$$        x$$$$$X++xXXXX$XXXX$X   X++XX;;++XX+++xX$$x
+                                                                      $$$$&$&&$;X$X    X$$$X+$$$$$X+++++X++xX$X  X++Xx;xXX++xx$$$X
+                                                                     $$X$&&&&&$$+$$ XX+$$&&$&&&&&&$$+X++++++++xxx++XXX++xX$$XX
+                                                                     $&$$&&$&&$&X&$X++$$$&$&&$&&$&$&XX++++++++++++X++x$$$X
+                                                                    +$&&&$&&&&$&$$$$$$$+&&&$&&&&&&&$$X++++++++++++x$$X
+                                                                    +&$&&&&$&&&$&$&$$$;$&$&&&$&$&$&$$&$X++++++++++X$
+                                                                    +&&&$&&&&$&&&$$X$$x$&&&$&&&&&&&&$&$&$$X+++++++X$X
+                                                            x        $&$&&$&&&&$&$X$&X$&$&&&&&&&&$&$&$$$&&$$$Xx+++X$X
+                                                             XX      $$&&&&&&$&&$$x$$X$&&&$&$&$&&&&$$XXX$$$&$&$$X+XX$
+                                                               $X    $$&$$&$&&$$$X+$$$$$&&&&&&&$&$&$$++++xX$$$$&$$$$X
+                                                      XXX        x$X $$$&&&&&&$Xx++$&$$&&&&&&&&&&$$$x++++++++X$$$&$&$$
+                                                           $$$$X   X$;:.X$$$$$X++++$&&&&$&$&$&$$$$$x+++++++++++x$$$&&$$$
+                                                                +$$$:..;.:;$$Xx+++++$&$&&&&&&&&$$$$$$$$$$$$$Xx+++X$$$&$$$$
+                                                                 X$..:.;;;;+++;..::++X$$$&$&$$$;...:....:......:X$$X$$&$$$$$x
+                                                                 X$;;;;;:;;.;:.;++;::::x$&&$X+;::::.:.:..:.:.:.:..:XX   X$$$$$
+                                                         XXXXXXxxx$+....:.X;+;;+.::;;;;;;;::.:.:.......:..:.:...:...:XX   $&$$&$
+                                                     XXXX         X$::.:..+.+..+......:..:.:.:;xx;:.:.:.:....:.:.:.:.:x$   $$&$$$
+                                                                   x$:..:.:;;.:+.:.:.:.:...........:+x:..:.:........:::xX   $$&&$$
+                                                                     $+..:.;.:.:.:..:...:.:.:.:.:..:.:..:.:.:.:.:...;;+X   $$&$X
+                                                                      $$;.:..+++:.:..:.:..:..:.:...:....:....:.:.:.:.:;++X
+                                                                        $$;:...::..:....:..:....:.:.:.:..:.:........:;;;+X
+                                                                           $$$;..:;.:.:..:..:.:......:.:..:.:.:.:.:;;;;;xX
+                                                                              $$$X;:;;:.:.:..:.:.:.:....:....:.:;;;;;;XX+X
+                                                                                  +$$$XX+;;;:::::.:.:.::::;;;;;;;+xX$X
+                                                                                        XX::;;;;;;;;;;;;;+++X$$$$X
+                                                                                         x$.::;;;$$$X;;+++
+                                                                                      XXxX$:.;XXXxxXX$
+                                                                                      $$XX$X+++x++XX$
+                                                                                      $$X$XXxx++xXXXX
+                                                                                     X$XXX+xx+X$XXxxx$X
+                                                                                    X$xxx++xxXxXx+++x+$X
+                                                                                   $$x+++++xx+x+x++xx+x$$
+                                                                                  X$xx+Xx++x++xxx+x+xx+x$$
+                                                                                 $$x+++xx+++x+xXx+++++++x$$
+                                                                               $XXX+x++++x+x+++$x++++xx+++X$
+                                                                              XxXX+++x+++++++++$x++x+++x+++X$X
+                                                                              XX$++x+xx+x++x+++$x+++x+x+x++xX$X
+                                                                               $X+++x+x++x+++++$xx+++++++xxXX$$$
+                                                                              XX++x+x++x+x+++++$x+++xX$$$$$$$X$$
+                                                                              $x+++++x+x+++++++$xX$XX$$XXx++X$
+                                                                             XX++x+x++x+x+xx+x+XXX$$X+X++++++$$
+                                                                             $X+++x+++++x++x++x++xX$::+++++++x$$
+                                                                             $x+x++x+xx+xx+x++xXXXX$::X+++++++X$
+                                                                            xX++++x+x++++++xXXXXXX$$;$+++++++X$$
+                                                                            $x++x+++xxxXXXXXXxx+xxX$X++++++xX$X
+                                                                           XXx+x+xXXXXXXXx++++++xX$x++++++X$$     +;+
+                                                                         XXXxXXXXXX$Xx++++x++XXX$$++++++XX$  +X$$;:.x
+                                                                      $X++xXXxxXX+++++++++xX$$$$:;++++X$$X$xXXx;...:X
+                                                                     $$++x+++++x++++x+++x$$$&$&$;.X+xX$$$$$&$&$+.:.;X
+                                                                      $$X++x+x++x++++xX$$$&&&&&&$::X$+X$$&$&&$$+:.;$
+                                                                        $$Xx++++++X$$$$$&&$$$&$&$X::+;$$$$&$$$$+:+XX
+                                                                          X$$$$$$$$$$$&$&&&&&$&$&$X;;$$$$$&$&$+++;X
+                                                                           X$&$&$&&&&&&&$&$&&&&&&&$$$$$$$$$X+;;;;XX
+                                                                            $$&&&$&$&&$&&&&&$&&$&&$&$&&$$X;;;;;;$+
+                                                                            $$$&$&&&&&&&&$&&&$&&&&&&&$$$&$X;+x$X
+                                                                          $$$$$$&$&$&$$&&&&$&&$&$&$&&&&$&$&+
+                                                                         $&&&&&&&&&$&$$$&$&&&&&&&&&&$&&&&$&$
+                                                                         $$$$&$&$&$&$$$$$&&$&$&&&&$&&$&$$$$X
+                                                                          x$$$&$&$&&$$$$$$$&$&&$&$&$&$&$$
+                                          XXXXXX                          X$XX$$$&$&$&$$$$$&&&$&$&&$$$$X$$
+                                       +X:..:.:..:$                      XX++XXXX$$$$$$$$$$$$&$&$$$XXXXXX$$
+  </pre>
+
+  <!-- HERO -->
+  <header class="hero fade">
+    <h1>Research Articles &amp; Blogs</h1>
+    <p class="subtitle">
+      Notes, short papers and explorations across mathematics, physics and machine learning.
+      Click any card to open the full PDF.
+    </p>
+  </header>
+
+  <!-- BLOG GRID -->
+  <main class="container fade">
     <div id="blogList" class="blog-grid"></div>
-  </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="fade">
+    <div>GitHub : <a href="https://github.com/Vyomie" target="_blank">github.com/Vyomie</a></div>
+    <div>Blog : <a href="https://www.vyxm.in/blogs">www.vyxm.in/blogs</a></div>
+    <div>Email : <a href="mailto:contact@vyxm.in">contact@vyxm.in</a></div>
+    <br>© 2025 Vyom Nishant Patel
+  </footer>
 
   <script src="script.js"></script>
 </body>

@@ -1,115 +1,238 @@
-/* Reset and Base */
+/* ===== Reset & Base ===== */
+:root {
+  --bg: #000;
+  --fg: #fff;
+  --muted: #999;
+  --card: #111;
+  --border: #1a1a1a;
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #0f0f0f, #000000);
-  color: #fcfcfc;
-  padding-top: 120px;
-  min-height: 100vh;
-  overflow-x: hidden;
 }
 
-/* Navbar */
-.navbar {
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.5;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+a { color: var(--fg); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ===== Glassy Floating Navbar (matches main site) ===== */
+#navbar {
   position: fixed;
-  top: 7%;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(30, 30, 30, 0.8);
-  border-radius: 100px;
-  width: 75%;
-  height: 10%;
-  max-width: 1100px;
-  padding: 0.7rem 4rem;
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 10px 40px;
+  z-index: 1000;
+  animation: floatNavbar 4s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  max-width: 95%;
+  overflow-x: auto;
+}
+
+#navbar::-webkit-scrollbar { display: none; }
+
+#navbar ul {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  backdrop-filter: blur(5px);
-  z-index: 100;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.048);
-  
+  justify-content: center;
+  gap: 40px;
+  list-style: none;
 }
 
-.nav-logo {
-  font-weight: 550;
-  font-size: 2rem;
-  color: #00f7ff;
-}
-
-.nav-left a {
-  color: #00f7ff;
-  text-decoration: none;
-  margin: 0 1rem;
+#navbar ul li a {
+  color: var(--fg);
   font-weight: 600;
-  transition: opacity 0.2s;
-}
-.nav-left a:hover {
-  opacity: 0.8;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  transition: color 0.2s;
 }
 
-/* Blog Container */
+#navbar ul li a:hover { color: var(--muted); text-decoration: none; }
+#navbar ul li a.active { color: var(--muted); }
+
+@keyframes floatNavbar {
+  0%, 100% { transform: translate(-50%, 0px); }
+  50%      { transform: translate(-50%, -6px); }
+}
+
+/* ===== ASCII background (subtle, matches main site) ===== */
+.ascii-bg {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.12;
+  font-size: 5px;
+  line-height: 1;
+  white-space: pre;
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+}
+
+/* ===== Hero ===== */
+.hero {
+  padding: 180px 10vw 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 2.6em;
+  margin-bottom: 12px;
+}
+
+.hero .subtitle {
+  color: var(--muted);
+  max-width: 640px;
+  font-size: 0.95em;
+}
+
+/* ===== Blog Container ===== */
 .container {
   max-width: 1100px;
-  margin: auto;
-  padding: 2rem;
-  text-align: center;
+  margin: 0 auto;
+  padding: 20px 10vw 80px;
 }
 
-.container h1 {
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  color: #00f7ff;
-}
-
-/* Blog Grid */
+/* ===== Blog Grid ===== */
 .blog-grid {
   display: grid;
-  grid-template-columns: 3;
-  gap: 2rem;
-  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
 }
 
-/* Blog Cards */
+/* ===== Blog Cards ===== */
 .blog-card {
-  background: #101010;
-  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-.blog-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-.blog-card img {
+.blog-card:hover {
+  transform: translateY(-6px);
+  border-color: #333;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.blog-card .thumb {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-bottom: 1px solid #222;
+  display: block;
+  border-bottom: 1px solid var(--border);
+  filter: grayscale(100%) brightness(0.8);
+  transition: filter 0.3s ease;
+}
+
+.blog-card:hover .thumb { filter: grayscale(0%) brightness(1); }
+
+.blog-card .thumb-fallback {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  color: #333;
+  background: linear-gradient(135deg, #0a0a0a, #161616);
+  border-bottom: 1px solid var(--border);
+}
+
+.blog-card .body {
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.blog-card .meta {
+  color: var(--muted);
+  font-size: 0.75em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .blog-card .title {
-  padding: 1rem;
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #00f7ff;
-}
-/* Bobble Animation for Navbar */
-@keyframes bobble {
-  0%, 100% {
-    transform: translate(-50%, 0);
-  }
-  50% {
-    transform: translate(-50%, -8px);
-  }
+  font-size: 1.15em;
+  font-weight: 600;
+  margin-bottom: 10px;
+  line-height: 1.35;
 }
 
-/* Apply animation to navbar */
-.navbar {
-  animation: bobble 5s ease-in-out infinite;
+.blog-card .desc {
+  color: var(--muted);
+  font-size: 0.85em;
+  flex: 1;
+}
+
+.blog-card .read {
+  margin-top: 16px;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.blog-card:hover .read { color: var(--muted); }
+
+/* ===== Footer (matches main site) ===== */
+footer {
+  text-align: center;
+  padding: 60px 10vw;
+  color: var(--muted);
+  font-size: 0.9em;
+  border-top: 1px solid var(--border);
+}
+
+footer a { color: var(--muted); }
+
+/* ===== Fade reveal on scroll ===== */
+.fade {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: 0.8s ease-out;
+}
+.fade.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero { padding: 140px 6vw 30px; }
+  .hero h1 { font-size: 2em; }
+  .container { padding: 20px 6vw 60px; }
+  .blog-grid { grid-template-columns: 1fr; gap: 20px; }
+  #navbar { padding: 8px 20px; border-radius: 15px; }
+  #navbar ul { gap: 20px; }
+  #navbar ul li a { font-size: 0.85em; }
+}
+
+@media (max-width: 480px) {
+  #navbar { padding: 6px 12px; border-radius: 12px; }
+  #navbar ul { gap: 12px; }
+  #navbar ul li a { font-size: 0.75em; }
 }
