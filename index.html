@@ -70,23 +70,51 @@ p{margin:0 0 10px}
 /* --- TIMELINE --- */
 .timeline{
   position:relative;
-  padding-left:50px;
-  border-left:2px solid #222;
+  padding-left:40px;
+  max-width:760px;
+}
+/* gradient vertical rail */
+.timeline::before{
+  content:'';
+  position:absolute;
+  left:6px;top:4px;bottom:4px;
+  width:2px;
+  background:linear-gradient(180deg,#fff,#444 60%,transparent);
 }
 .timeline-entry{
-  margin-bottom:40px;
   position:relative;
+  margin-bottom:14px;
+  padding:16px 20px;
+  border:1px solid var(--border, #1a1a1a);
+  border-radius:12px;
+  background:rgba(255,255,255,0.02);
+  transition:transform .25s ease, border-color .25s ease, background .25s ease;
 }
+.timeline-entry:hover{
+  transform:translateX(4px);
+  border-color:#333;
+  background:rgba(255,255,255,0.04);
+}
+/* marker centered on the rail */
 .timeline-entry::before{
   content:'';
   position:absolute;
-  left:-25px;top:6px;
-  width:16px;height:16px;
-  background:var(--timeline-marker);
+  left:-40px;top:22px;
+  width:13px;height:13px;
+  background:#fff;
   border-radius:50%;
+  box-shadow:0 0 0 4px rgba(255,255,255,0.08);
+  transform:translateX(0.5px);
 }
 .timeline-entry h3{margin:0;font-size:1.1em}
-.timeline-entry .time{color:var(--muted);font-size:0.9em;margin-bottom:5px}
+.timeline-entry p{margin:6px 0 0;color:var(--muted);font-size:0.92em}
+.timeline-entry .time{
+  color:var(--muted);
+  font-size:0.78em;
+  margin-bottom:4px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
 
 /* --- TECHNOLOGIES --- */
 .tech-grid{
@@ -259,13 +287,17 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   section {padding:60px 5vw;}
   #hero h1 {font-size:2.2em;}
   #hero .bio {max-width:100%; font-size:0.95em;}
+
+  /* Smaller header banner + avatar on mobile */
+  #header {height:190px;}
+  #header #avatar {width:96px; height:96px; bottom:16px; left:50%; transform:translateX(-50%);}
   
   /* Timeline */
-  .timeline {padding-left:20px; border-left:2px solid #222;}
-  .timeline-entry {margin-bottom:25px;}
-  .timeline-entry::before {left:-12px; width:12px; height:12px; top:4px;}
+  .timeline {padding-left:28px;}
+  .timeline-entry {margin-bottom:12px; padding:14px 16px;}
+  .timeline-entry::before {left:-28px; top:20px; width:11px; height:11px;}
   .timeline-entry h3 {font-size:1em;}
-  .timeline-entry .time {font-size:0.8em;}
+  .timeline-entry .time {font-size:0.72em;}
   
   /* Technologies grid */
   .tech-grid {grid-template-columns:repeat(auto-fit,minmax(80px,1fr)); gap:15px;}
@@ -312,19 +344,20 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
     overflow-x: hidden; /* hides horizontal scroll */
   }
 
-  /* ASCII background */
-  pre[style] {
-    max-width: 100%;   /* prevent it from overflowing */
-    white-space: pre-wrap; /* wrap long lines */
-    overflow: hidden; /* clip anything still overflowing */
-    left: 50%;
-    transform: translateX(-50%);
+  /* ASCII background: keep it as a non-wrapping fixed backdrop, just clip overflow */
+  .ascii-bg {
+    max-width: 100%;
+    white-space: pre;   /* never wrap the art */
+    overflow: hidden;   /* clip anything past the viewport */
+    left: 0;
+    transform: none;
+    font-size: 4px;     /* shrink so more of the cat is visible on small screens */
   }
 
   .ascii pre {
-    font-size: 6px;          /* shrink font on mobile */
+    font-size: 5px;          /* shrink word-art on mobile */
     line-height: 1;
-    white-space: pre-wrap;   /* wrap long lines */
+    white-space: pre;        /* keep ASCII art intact */
     overflow-x: hidden;
     max-width: 100%;
     margin: 0 auto;
@@ -593,11 +626,10 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 </nav>
 
 <!-- GLOBAL ASCII CAT BACKGROUND -->
-<pre style="
+<pre class="ascii-bg" style="
   position:fixed;
-
   top:0;
-  left:50%;
+  left:0;
   width:100%;
   height:100%;
   pointer-events:none;
@@ -605,7 +637,8 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   opacity:0.15;
   font-size:5px;
   line-height:1;
-  white-space:pre-wrap;
+  white-space:pre;
+  overflow:hidden;
   color:var(--fg);
 ">
                                                                                                                                                                                                         
@@ -740,17 +773,29 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 <section id="timeline" class="fade">
   <h2>Project Timeline</h2>
   <div class="timeline">
-    
+
+    <div class="timeline-entry">
+      <div class="time">2026</div>
+      <h3>YC Startup School — India</h3>
+      <p>Selected for Y Combinator's Startup School (India) to learn how to build and scale an early-stage startup.</p>
+    </div>
+
+    <div class="timeline-entry">
+      <div class="time">Nov 2025 - Present</div>
+      <h3>AI Student Community</h3>
+      <p>Founded and lead a student community for young builders in AI/ML — running workshops, study jams and collaborative projects.</p>
+    </div>
+
     <div class="timeline-entry">
       <div class="time">Oct 2025 - Present</div>
       <h3><a href="https://teenage.works">Teenage Works</a></h3>
-      <p>leading an initiative to build consumer ML products (Team of 7 for now).</p>
+      <p>Leading an initiative to build consumer ML products (team of 7 for now).</p>
     </div>
 
     <div class="timeline-entry">
       <div class="time">Sept 2025 - Present</div>
-      <h3>Pandora: AI-Powered EdTech Platform</h3>
-      <p>Developing adaptive curriculum system with real-time learning analytics for personalized education.</p>
+      <h3>Clarifyed.ai</h3>
+      <p>Building an AI learning platform that breaks down complex topics into clear, personalized, step-by-step explanations for students.</p>
     </div>
     
     <div class="timeline-entry">
@@ -914,30 +959,31 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   </div>
 
 <!-- SPOTIFY & GITHUB -->
-<section id="widgets" style="padding:40px 20px; text-align:center; color:#fff; font-family:'JetBrains Mono', monospace;">
-  <h2 style="margin-bottom:30px; font-size:2em; color:#fff;">Spotify & GitHub</h2>
-  <div style="display:flex; justify-content:center; align-items:flex-start; gap:40px; flex-wrap:nowrap;">
+<section id="widgets" class="fade" style="padding:60px 10vw; text-align:center; color:#fff; font-family:'JetBrains Mono', monospace;">
+  <h2 style="margin-bottom:30px; font-size:2em; color:#fff;">Spotify &amp; GitHub</h2>
+  <div style="display:flex; flex-direction:column; align-items:center; gap:40px; max-width:760px; margin:0 auto;">
 
     <!-- Spotify -->
-    <div style="flex:0 0 50%;">
-      <div style="margin-bottom:10px; font-weight:bold; font-size:1.2em;">Spotify Playlist</div>
+    <div style="width:100%;">
+      <div style="margin-bottom:12px; font-weight:bold; font-size:1.1em; text-align:left;">Spotify Playlist</div>
       <div style="border-radius:12px; overflow:hidden;">
-        <iframe 
-          src="https://open.spotify.com/embed/playlist/29BaDUJS5n5venJE9TRfmF?si=zMBabEc4S8u5WkSNNPKakw" 
-          width="320" 
-          height="100%" 
-          frameborder="0" 
-          allowtransparency="true" 
-          allow="encrypted-media">
+        <iframe
+          style="width:100%; border:0; display:block;"
+          src="https://open.spotify.com/embed/playlist/29BaDUJS5n5venJE9TRfmF?si=zMBabEc4S8u5WkSNNPKakw"
+          height="352"
+          frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media"
+          loading="lazy">
         </iframe>
       </div>
     </div>
 
     <!-- GitHub -->
-    <div style="flex:0 0 50%;">
-      <div style="margin-bottom:10px; font-weight:bold; font-size:1.2em;">Latest GitHub Commits</div>
-      <div id="githubWidget" style="padding:15px; min-height:380px; background:#222; border-radius:8px; color:#fff; overflow:auto;">
-        Loading...
+    <div style="width:100%;">
+      <div style="margin-bottom:12px; font-weight:bold; font-size:1.1em; text-align:left;">Latest GitHub Activity</div>
+      <div id="githubWidget" style="padding:8px 14px; min-height:120px; background:#111; border:1px solid #1a1a1a; border-radius:12px; color:#fff; text-align:left;">
+        Loading…
       </div>
     </div>
 
@@ -1315,41 +1361,61 @@ drawPreview();
 
 <script>
 async function fetchLatestCommits() {
-  const url = "https://api.github.com/search/commits?q=author:Vyomie&order=desc&sort=committer-date";
   const container = document.getElementById("githubWidget");
+  const USER = "Vyomie";
+
+  const escapeHtml = (s) => s.replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
 
   try {
-    const res = await fetch(url, {
-      headers: {
-        "Accept": "application/vnd.github.cloak-preview+json"
+    // Public events feed works without authentication (unlike the search API).
+    const res = await fetch(`https://api.github.com/users/${USER}/events/public?per_page=30`, {
+      headers: { "Accept": "application/vnd.github+json" }
+    });
+    if (!res.ok) throw new Error("GitHub API error " + res.status);
+    const events = await res.json();
+
+    // Flatten PushEvent commits into a single recent list.
+    const commits = [];
+    for (const ev of events) {
+      if (ev.type !== "PushEvent" || !ev.payload || !ev.payload.commits) continue;
+      const repo = ev.repo.name;
+      for (const c of ev.payload.commits.slice().reverse()) {
+        commits.push({
+          message: c.message.split("\n")[0],
+          repo,
+          date: ev.created_at,
+          url: `https://github.com/${repo}/commit/${c.sha}`
+        });
+        if (commits.length >= 5) break;
       }
-    });
-    if (!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
+      if (commits.length >= 5) break;
+    }
 
-    container.innerHTML = "";
+    if (!commits.length) {
+      container.innerHTML =
+        `<div style="color:#999; padding:10px;">No recent public commits. ` +
+        `<a href="https://github.com/${USER}" target="_blank" style="color:#ccc;">View profile →</a></div>`;
+      return;
+    }
 
-    // Take the first 3 commits
-    data.items.slice(0, 5).forEach(commit => {
-      const commitDiv = document.createElement("div");
-      commitDiv.style.marginBottom = "10px";
-      commitDiv.style.padding = "10px";
-      commitDiv.style.borderLeft = "2px solid #555";
-
-      commitDiv.innerHTML = `
-        <a href="${commit.html_url}" target="_blank" style="color:#999; font-weight:italic;">
-          ${commit.commit.message}
+    container.innerHTML = commits.map(c => `
+      <div style="padding:12px 4px; border-bottom:1px solid #1a1a1a;">
+        <a href="${c.url}" target="_blank" style="color:#fff; font-weight:600; font-size:0.9em;">
+          ${escapeHtml(c.message)}
         </a>
-        <div style="color:#999; font-size:0.65em; margin-top:5px;">
-          ${commit.commit.author.name} • ${new Date(commit.commit.author.date).toLocaleString()} • Repo: <a href="${commit.repository.html_url}" target="_blank">${commit.repository.full_name}</a>
+        <div style="color:#999; font-size:0.72em; margin-top:6px;">
+          ${escapeHtml(c.repo)} • ${new Date(c.date).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}
         </div>
-      `;
-      container.appendChild(commitDiv);
-    });
+      </div>
+    `).join("");
 
   } catch (err) {
-    container.textContent = "Unable to load commits.";
     console.error(err);
+    container.innerHTML =
+      `<div style="color:#999; padding:10px;">Couldn't load commits right now. ` +
+      `<a href="https://github.com/${USER}" target="_blank" style="color:#ccc;">View GitHub →</a></div>`;
   }
 }
 
