@@ -1,80 +1,99 @@
-/* ===== Reset & Base ===== */
+/* ============================================================
+   VYXM — Blog page
+   Monochrome JetBrains Mono theme + liquid glass, matching the
+   main portfolio (index.html).
+   ============================================================ */
+
 :root {
   --bg: #000;
   --fg: #fff;
-  --muted: #999;
-  --card: #111;
-  --border: #1a1a1a;
+  --muted: #9a9a9a;
+
+  /* liquid glass tokens */
+  --glass-bg: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+  --glass-border: rgba(255,255,255,0.16);
+  --glass-shadow: 0 8px 30px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.22), inset 0 -1px 1px rgba(0,0,0,0.25);
+  --glass-blur: blur(16px) saturate(180%);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
   color: var(--fg);
   font-family: 'JetBrains Mono', monospace;
   line-height: 1.5;
-  scroll-behavior: smooth;
-  overflow-x: hidden;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 a { color: var(--fg); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ===== Glassy Floating Navbar (matches main site) ===== */
+/* ---------- Liquid glass utility ---------- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ---------- Liquid glass floating navbar ---------- */
 #navbar {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  backdrop-filter: blur(12px);
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 22px;
   padding: 10px 40px;
   z-index: 1000;
   animation: floatNavbar 4s ease-in-out infinite;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.35), inset 0 -1px 1px rgba(0,0,0,0.25);
   max-width: 95%;
-  overflow-x: auto;
+  overflow: hidden;
 }
-
-#navbar::-webkit-scrollbar { display: none; }
-
+#navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0) 45%);
+  pointer-events: none;
+}
 #navbar ul {
   display: flex;
   justify-content: center;
   gap: 40px;
   list-style: none;
+  position: relative;
+  z-index: 1;
 }
-
 #navbar ul li a {
   color: var(--fg);
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
   white-space: nowrap;
   transition: color 0.2s;
 }
-
 #navbar ul li a:hover { color: var(--muted); text-decoration: none; }
 #navbar ul li a.active { color: var(--muted); }
 
 @keyframes floatNavbar {
-  0%, 100% { transform: translate(-50%, 0px); }
+  0%, 100% { transform: translate(-50%, 0); }
   50%      { transform: translate(-50%, -6px); }
 }
 
-/* ===== ASCII background (subtle, matches main site) ===== */
+/* ---------- ASCII background (also inline-styled in HTML for safety) ---------- */
 .ascii-bg {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   margin: 0;
   pointer-events: none;
   z-index: -1;
@@ -84,81 +103,74 @@ a:hover { text-decoration: underline; }
   white-space: pre;
   overflow: hidden;
   color: var(--fg);
-  font-family: 'JetBrains Mono', monospace;
 }
 
-/* ===== Hero ===== */
+/* ---------- Hero ---------- */
 .hero {
-  padding: 180px 10vw 40px;
   max-width: 1100px;
   margin: 0 auto;
+  padding: 180px 8vw 30px;
 }
-
-.hero h1 {
-  font-size: 2.6em;
-  margin-bottom: 12px;
-}
-
-.hero .subtitle {
+.hero .eyebrow {
   color: var(--muted);
-  max-width: 640px;
-  font-size: 0.95em;
+  font-size: 0.8em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
+.hero h1 { font-size: 2.6em; line-height: 1.15; margin-bottom: 14px; }
+.hero .subtitle { color: var(--muted); max-width: 640px; font-size: 0.95em; }
 
-/* ===== Blog Container ===== */
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 10vw 80px;
-}
+/* ---------- Container / grid ---------- */
+.container { max-width: 1100px; margin: 0 auto; padding: 20px 8vw 90px; }
 
-/* ===== Blog Grid ===== */
 .blog-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 28px;
 }
 
-/* ===== Blog Cards ===== */
+/* ---------- Liquid glass blog cards ---------- */
 .blog-card {
   display: flex;
   flex-direction: column;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s cubic-bezier(.2,.8,.2,1), border-color 0.3s, box-shadow 0.3s;
 }
-
 .blog-card:hover {
-  transform: translateY(-6px);
-  border-color: #333;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  transform: translateY(-8px);
+  border-color: rgba(255,255,255,0.3);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.28);
 }
 
-.blog-card .thumb {
+.blog-card .thumb-wrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.blog-card .thumb {
+  width: 100%; height: 100%;
   object-fit: cover;
   display: block;
-  border-bottom: 1px solid var(--border);
-  filter: grayscale(100%) brightness(0.8);
-  transition: filter 0.3s ease;
+  filter: grayscale(100%) brightness(0.78);
+  transition: filter 0.4s ease, transform 0.4s ease;
 }
-
-.blog-card:hover .thumb { filter: grayscale(0%) brightness(1); }
+.blog-card:hover .thumb { filter: grayscale(0%) brightness(1); transform: scale(1.04); }
 
 .blog-card .thumb-fallback {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5em;
-  color: #333;
-  background: linear-gradient(135deg, #0a0a0a, #161616);
-  border-bottom: 1px solid var(--border);
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2em; letter-spacing: 4px; color: #555;
+  background: linear-gradient(135deg, #0c0c0c, #161616);
 }
 
 .blog-card .body {
@@ -167,71 +179,43 @@ a:hover { text-decoration: underline; }
   flex-direction: column;
   flex: 1;
 }
-
 .blog-card .meta {
   color: var(--muted);
-  font-size: 0.75em;
-  margin-bottom: 8px;
+  font-size: 0.72em;
+  margin-bottom: 9px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
-
-.blog-card .title {
-  font-size: 1.15em;
-  font-weight: 600;
-  margin-bottom: 10px;
-  line-height: 1.35;
-}
-
-.blog-card .desc {
-  color: var(--muted);
-  font-size: 0.85em;
-  flex: 1;
-}
-
-.blog-card .read {
-  margin-top: 16px;
-  font-size: 0.8em;
-  font-weight: 600;
-  color: var(--fg);
-}
-
+.blog-card .title { font-size: 1.12em; font-weight: 600; margin-bottom: 10px; line-height: 1.35; }
+.blog-card .desc { color: var(--muted); font-size: 0.85em; flex: 1; }
+.blog-card .read { margin-top: 16px; font-size: 0.8em; font-weight: 600; color: var(--fg); }
 .blog-card:hover .read { color: var(--muted); }
 
-/* ===== Footer (matches main site) ===== */
+/* ---------- Footer ---------- */
 footer {
   text-align: center;
-  padding: 60px 10vw;
+  padding: 60px 8vw;
   color: var(--muted);
   font-size: 0.9em;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
-
 footer a { color: var(--muted); }
 
-/* ===== Fade reveal on scroll ===== */
-.fade {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: 0.8s ease-out;
-}
-.fade.visible {
-  opacity: 1;
-  transform: none;
-}
+/* ---------- Fade reveal on scroll ---------- */
+.fade { opacity: 0; transform: translateY(40px); transition: 0.8s ease-out; }
+.fade.visible { opacity: 1; transform: none; }
 
-/* ===== Responsive ===== */
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .ascii-bg { font-size: 4px; }
-  .hero { padding: 140px 6vw 30px; }
+  .hero { padding: 140px 6vw 24px; }
   .hero h1 { font-size: 2em; }
-  .container { padding: 20px 6vw 60px; }
+  .container { padding: 16px 6vw 60px; }
   .blog-grid { grid-template-columns: 1fr; gap: 20px; }
-  #navbar { padding: 8px 20px; border-radius: 15px; }
+  #navbar { padding: 8px 20px; border-radius: 16px; }
   #navbar ul { gap: 20px; }
   #navbar ul li a { font-size: 0.85em; }
 }
-
 @media (max-width: 480px) {
   #navbar { padding: 6px 12px; border-radius: 12px; }
   #navbar ul { gap: 12px; }

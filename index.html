@@ -70,41 +70,64 @@ p{margin:0 0 10px}
 /* --- TIMELINE --- */
 .timeline{
   position:relative;
-  padding-left:40px;
+  padding-left:48px;
   max-width:760px;
 }
 /* gradient vertical rail */
 .timeline::before{
   content:'';
   position:absolute;
-  left:6px;top:4px;bottom:4px;
+  left:7px;top:4px;bottom:4px;
   width:2px;
-  background:linear-gradient(180deg,#fff,#444 60%,transparent);
+  background:linear-gradient(180deg,#fff,#555 60%,transparent);
 }
+/* liquid-glass card */
 .timeline-entry{
   position:relative;
   margin-bottom:14px;
   padding:16px 20px;
-  border:1px solid var(--border, #1a1a1a);
-  border-radius:12px;
-  background:rgba(255,255,255,0.02);
-  transition:transform .25s ease, border-color .25s ease, background .25s ease;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:14px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  backdrop-filter:blur(12px) saturate(160%);
+  -webkit-backdrop-filter:blur(12px) saturate(160%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.15);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s;
 }
 .timeline-entry:hover{
-  transform:translateX(4px);
-  border-color:#333;
-  background:rgba(255,255,255,0.04);
+  transform:translateX(10px);
+  border-color:rgba(255,255,255,0.28);
+  box-shadow:0 14px 34px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.25);
 }
-/* marker centered on the rail */
+/* marker dot — pinned to the rail (counter-translates so it never detaches) */
 .timeline-entry::before{
   content:'';
   position:absolute;
-  left:-40px;top:22px;
-  width:13px;height:13px;
+  left:-46px;top:20px;
+  width:12px;height:12px;
   background:#fff;
   border-radius:50%;
   box-shadow:0 0 0 4px rgba(255,255,255,0.08);
-  transform:translateX(0.5px);
+  z-index:1;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
+}
+.timeline-entry:hover::before{
+  transform:translateX(-10px);
+  box-shadow:0 0 0 6px rgba(255,255,255,0.14);
+}
+/* connector — bridges rail to card and stretches as the card slides out */
+.timeline-entry::after{
+  content:'';
+  position:absolute;
+  left:-40px;top:25px;
+  width:40px;height:2px;
+  background:rgba(255,255,255,0.25);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), width .3s, background .3s;
+}
+.timeline-entry:hover::after{
+  transform:translateX(-10px);
+  width:50px;
+  background:rgba(255,255,255,0.55);
 }
 .timeline-entry h3{margin:0;font-size:1.1em}
 .timeline-entry p{margin:6px 0 0;color:var(--muted);font-size:0.92em}
@@ -288,14 +311,16 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   #hero h1 {font-size:2.2em;}
   #hero .bio {max-width:100%; font-size:0.95em;}
 
-  /* Smaller header banner + avatar on mobile */
+  /* Smaller header banner + avatar on mobile (kept on the left) */
   #header {height:190px;}
-  #header #avatar {width:96px; height:96px; bottom:16px; left:50%; transform:translateX(-50%);}
+  #header #avatar {width:96px; height:96px; bottom:16px; left:24px;}
   
   /* Timeline */
-  .timeline {padding-left:28px;}
+  .timeline {padding-left:36px;}
   .timeline-entry {margin-bottom:12px; padding:14px 16px;}
-  .timeline-entry::before {left:-28px; top:20px; width:11px; height:11px;}
+  .timeline-entry::before {left:-34px; top:18px; width:12px; height:12px;}
+  .timeline-entry::after {left:-28px; top:23px; width:28px;}
+  .timeline-entry:hover::after {width:38px;}
   .timeline-entry h3 {font-size:1em;}
   .timeline-entry .time {font-size:0.72em;}
   
@@ -397,21 +422,36 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 
   
 }
-/* --- GLASSY FLOATING NAVBAR --- */
+/* --- LIQUID GLASS FLOATING NAVBAR --- */
 #navbar {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  backdrop-filter: blur(12px);
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 22px;
   padding: 10px 40px;
   z-index: 1000;
   animation: floatNavbar 4s ease-in-out infinite;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  max-width: 95%; /* prevents overflow on mobile */
-  overflow-x: auto; /* allows horizontal scroll if needed */
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.45),
+    inset 0 1px 1px rgba(255,255,255,0.35),
+    inset 0 -1px 1px rgba(0,0,0,0.25);
+  max-width: 95%;
+  overflow: hidden;
+}
+
+/* specular highlight sweep for the liquid-glass look */
+#navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0) 45%);
+  pointer-events: none;
 }
 
 /* Smooth scroll for overflow on very small screens */
@@ -426,6 +466,8 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   list-style: none;
   margin: 0;
   padding: 0;
+  position: relative;
+  z-index: 1;
 }
 
 #navbar ul li a {
@@ -608,6 +650,77 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
     z-index: 3000;
     pointer-events: auto;
 }
+
+/* ===== LIQUID GLASS (applied across the site) ===== */
+.glass-card{
+  background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.16);
+  border-radius:18px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.22), inset 0 -1px 1px rgba(0,0,0,0.25);
+}
+
+/* Notes / tweets as liquid-glass cards */
+.tweets{ display:flex; flex-direction:column; gap:16px; }
+.tweet{
+  border:1px solid rgba(255,255,255,0.12) !important;
+  border-radius:14px;
+  padding:16px 20px !important;
+  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  backdrop-filter:blur(12px) saturate(160%);
+  -webkit-backdrop-filter:blur(12px) saturate(160%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.15);
+  transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.tweet:first-child{ border-top:1px solid rgba(255,255,255,0.12) !important; }
+.tweet:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,255,255,0.26) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.22);
+}
+
+/* Project hover tooltips on liquid glass */
+.project .tooltip{
+  background:linear-gradient(135deg, rgba(20,20,22,0.82), rgba(10,10,12,0.7)) !important;
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.12);
+  color:#dcdcdc !important;
+}
+
+/* Visualizer + interactive controls on liquid glass */
+.viz-section{
+  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)) !important;
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.14) !important;
+  box-shadow:0 10px 34px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.18);
+}
+.problem-btn{
+  background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)) !important;
+  backdrop-filter:blur(10px) saturate(160%);
+  -webkit-backdrop-filter:blur(10px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.14) !important;
+  color:#e9eef6 !important;
+  transition:transform .2s ease, border-color .2s ease;
+}
+.problem-btn:hover{ transform:translateY(-2px); border-color:rgba(255,255,255,0.3) !important; }
+.problem-btn.active{ border-color:rgba(255,255,255,0.45) !important; color:#fff !important; }
+.sidebar{
+  background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+  backdrop-filter:blur(10px) saturate(150%);
+  -webkit-backdrop-filter:blur(10px) saturate(150%);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:12px;
+}
+.digit-controls button{
+  background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)) !important;
+  backdrop-filter:blur(10px) saturate(160%);
+  -webkit-backdrop-filter:blur(10px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.16) !important;
+}
+.digit-controls button:hover{ border-color:rgba(255,255,255,0.32) !important; }
 
 </style>
 
@@ -957,18 +1070,18 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   </div>
 
 <!-- SPOTIFY & GITHUB -->
-<section id="widgets" class="fade" style="padding:60px 10vw; text-align:center; color:#fff; font-family:'JetBrains Mono', monospace;">
-  <h2 style="margin-bottom:30px; font-size:2em; color:#fff;">Spotify &amp; GitHub</h2>
-  <div style="display:flex; flex-direction:column; align-items:center; gap:40px; max-width:760px; margin:0 auto;">
+<section id="widgets" class="fade" style="padding:60px 8vw; text-align:center; color:#fff; font-family:'JetBrains Mono', monospace;">
+  <h2 style="margin-bottom:36px; font-size:2em; color:#fff;">Spotify &amp; GitHub</h2>
+  <div style="display:flex; flex-direction:column; align-items:center; gap:48px; max-width:920px; margin:0 auto;">
 
     <!-- Spotify -->
     <div style="width:100%;">
-      <div style="margin-bottom:12px; font-weight:bold; font-size:1.1em; text-align:left;">Spotify Playlist</div>
-      <div style="border-radius:12px; overflow:hidden;">
+      <div style="margin-bottom:14px; font-weight:bold; font-size:1.15em; text-align:left;">Spotify Playlist</div>
+      <div class="glass-card" style="border-radius:18px; overflow:hidden; padding:0;">
         <iframe
-          style="width:100%; border:0; display:block;"
-          src="https://open.spotify.com/embed/playlist/29BaDUJS5n5venJE9TRfmF?si=zMBabEc4S8u5WkSNNPKakw"
-          height="352"
+          style="width:100%; border:0; display:block; border-radius:18px;"
+          src="https://open.spotify.com/embed/playlist/29BaDUJS5n5venJE9TRfmF?si=zMBabEc4S8u5WkSNNPKakw&theme=0"
+          height="560"
           frameborder="0"
           allowtransparency="true"
           allow="encrypted-media"
@@ -979,8 +1092,8 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 
     <!-- GitHub -->
     <div style="width:100%;">
-      <div style="margin-bottom:12px; font-weight:bold; font-size:1.1em; text-align:left;">Latest GitHub Activity</div>
-      <div id="githubWidget" style="padding:8px 14px; min-height:120px; background:#111; border:1px solid #1a1a1a; border-radius:12px; color:#fff; text-align:left;">
+      <div style="margin-bottom:14px; font-weight:bold; font-size:1.15em; text-align:left;">Latest GitHub Activity</div>
+      <div id="githubWidget" class="glass-card" style="padding:8px 18px; min-height:120px; color:#fff; text-align:left;">
         Loading…
       </div>
     </div>
@@ -1361,50 +1474,51 @@ drawPreview();
 async function fetchLatestCommits() {
   const container = document.getElementById("githubWidget");
   const USER = "Vyomie";
-
-  const escapeHtml = (s) => s.replace(/[&<>"']/g, c => (
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => (
     {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
   ));
+  const fmt = (d) => new Date(d).toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
+  const gh = (url) => fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
+
+  const profileLink = `<a href="https://github.com/${USER}" target="_blank" style="color:#ccc;">View GitHub →</a>`;
 
   try {
-    // Public events feed works without authentication (unlike the search API).
-    const res = await fetch(`https://api.github.com/users/${USER}/events/public?per_page=30`, {
-      headers: { "Accept": "application/vnd.github+json" }
-    });
-    if (!res.ok) throw new Error("GitHub API error " + res.status);
-    const events = await res.json();
+    // Most recently *pushed* public repos — reliable even when activity is via the web UI.
+    const reposRes = await gh(`https://api.github.com/users/${USER}/repos?sort=pushed&per_page=6&type=owner`);
+    if (!reposRes.ok) throw new Error("repos " + reposRes.status);
+    const repos = (await reposRes.json()).filter(r => !r.fork);
 
-    // Flatten PushEvent commits into a single recent list.
-    const commits = [];
-    for (const ev of events) {
-      if (ev.type !== "PushEvent" || !ev.payload || !ev.payload.commits) continue;
-      const repo = ev.repo.name;
-      for (const c of ev.payload.commits.slice().reverse()) {
-        commits.push({
-          message: c.message.split("\n")[0],
-          repo,
-          date: ev.created_at,
-          url: `https://github.com/${repo}/commit/${c.sha}`
-        });
-        if (commits.length >= 5) break;
-      }
-      if (commits.length >= 5) break;
-    }
-
-    if (!commits.length) {
-      container.innerHTML =
-        `<div style="color:#999; padding:10px;">No recent public commits. ` +
-        `<a href="https://github.com/${USER}" target="_blank" style="color:#ccc;">View profile →</a></div>`;
+    if (!repos.length) {
+      container.innerHTML = `<div style="color:#999; padding:14px 4px;">No public repositories yet. ${profileLink}</div>`;
       return;
     }
 
-    container.innerHTML = commits.map(c => `
-      <div style="padding:12px 4px; border-bottom:1px solid #1a1a1a;">
-        <a href="${c.url}" target="_blank" style="color:#fff; font-weight:600; font-size:0.9em;">
-          ${escapeHtml(c.message)}
+    // For each repo, try to grab its latest commit message (best-effort).
+    const items = await Promise.all(repos.slice(0, 5).map(async (r) => {
+      let title = r.description || "Updated repository";
+      let url = r.html_url;
+      let date = r.pushed_at;
+      try {
+        const cRes = await gh(`https://api.github.com/repos/${USER}/${r.name}/commits?per_page=1`);
+        if (cRes.ok) {
+          const commits = await cRes.json();
+          if (Array.isArray(commits) && commits[0]) {
+            title = commits[0].commit.message.split("\n")[0];
+            url = commits[0].html_url;
+            date = commits[0].commit.author.date;
+          }
+        }
+      } catch (_) { /* keep repo-level fallback */ }
+      return { repo: r.name, title, url, date };
+    }));
+
+    container.innerHTML = items.map(it => `
+      <div style="padding:13px 4px; border-bottom:1px solid rgba(255,255,255,0.08);">
+        <a href="${it.url}" target="_blank" style="color:#fff; font-weight:600; font-size:0.92em;">
+          ${esc(it.title)}
         </a>
         <div style="color:#999; font-size:0.72em; margin-top:6px;">
-          ${escapeHtml(c.repo)} • ${new Date(c.date).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}
+          ${esc(it.repo)} • ${fmt(it.date)}
         </div>
       </div>
     `).join("");
@@ -1412,8 +1526,7 @@ async function fetchLatestCommits() {
   } catch (err) {
     console.error(err);
     container.innerHTML =
-      `<div style="color:#999; padding:10px;">Couldn't load commits right now. ` +
-      `<a href="https://github.com/${USER}" target="_blank" style="color:#ccc;">View GitHub →</a></div>`;
+      `<div style="color:#999; padding:14px 4px;">Couldn't load GitHub right now (rate limit). ${profileLink}</div>`;
   }
 }
 

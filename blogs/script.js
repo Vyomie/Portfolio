@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const blogList = document.getElementById("blogList");
 
-  // Blog metadata. `file` is the PDF inside blog-pdfs/.
-  // The thumbnail is auto-detected from the matching image (same base name).
+  // Blog metadata. `file` is the PDF inside blog-pdfs/; the thumbnail is
+  // auto-detected from the image that shares the same base name.
   const blogs = [
     {
       file: "projectile_with_spin.pdf",
@@ -29,26 +29,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const imageExtensions = [".webp", ".png", ".jpg", ".jpeg"];
 
-  // Try each extension until an image loads; otherwise return null.
+  // Resolve the first image extension that actually loads; otherwise null.
   function findValidImage(baseFile, callback) {
     let index = 0;
-
-    function tryNext() {
-      if (index >= imageExtensions.length) {
-        callback(null);
-        return;
-      }
+    (function tryNext() {
+      if (index >= imageExtensions.length) return callback(null);
       const img = new Image();
       const src = `blog-pdfs/${baseFile}${imageExtensions[index]}`;
       img.onload = () => callback(src);
-      img.onerror = () => {
-        index++;
-        tryNext();
-      };
+      img.onerror = () => { index++; tryNext(); };
       img.src = src;
-    }
-
-    tryNext();
+    })();
   }
 
   blogs.forEach(blog => {
@@ -60,8 +51,8 @@ document.addEventListener("DOMContentLoaded", function () {
       card.className = "blog-card";
 
       const thumb = imageSrc
-        ? `<img class="thumb" src="${imageSrc}" alt="${blog.title}" loading="lazy" />`
-        : `<div class="thumb-fallback">PDF</div>`;
+        ? `<div class="thumb-wrap"><img class="thumb" src="${imageSrc}" alt="${blog.title}" loading="lazy" /></div>`
+        : `<div class="thumb-wrap"><div class="thumb-fallback">PDF</div></div>`;
 
       card.innerHTML = `
         ${thumb}
@@ -78,11 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Fade-in reveal on scroll (matches main site)
+  // Fade-in reveal on scroll (matches the main site)
   const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add("visible");
-    });
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
   }, { threshold: 0.1 });
   document.querySelectorAll(".fade").forEach(el => io.observe(el));
 });
