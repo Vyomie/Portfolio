@@ -3,7 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Vyom — Developer</title>
+
+<!-- ===== Primary SEO ===== -->
+<title>Vyom Nishant Patel — AI / ML Developer &amp; Researcher | Vyom Patel</title>
+<meta name="description" content="Vyom Nishant Patel (Vyom Patel, Vyom N. Patel) — 16-year-old AI / ML developer and cognitive systems researcher. Founder of Teenage Works, building Clarifyed.ai. Liquid Neural Networks, LLMs, quantum neural networks. YC Startup School India.">
+<meta name="keywords" content="Vyom, Vyom Patel, Vyom N. Patel, Vyom Nishant Patel, Vyomie, AI developer, ML developer, machine learning, liquid neural networks, LLM, Teenage Works, Clarifyed, cognitive systems researcher, VYXM">
+<meta name="author" content="Vyom Nishant Patel">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="https://www.vyxm.in/">
+
+<!-- ===== Open Graph ===== -->
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Vyom Nishant Patel — AI / ML Developer &amp; Researcher">
+<meta property="og:description" content="16-year-old AI / ML developer and cognitive systems researcher. Founder of Teenage Works, building Clarifyed.ai.">
+<meta property="og:url" content="https://www.vyxm.in/">
+<meta property="og:site_name" content="Vyom Nishant Patel">
+<meta property="og:image" content="https://www.vyxm.in/vyom-pfp.jpg">
+<meta property="profile:first_name" content="Vyom">
+<meta property="profile:last_name" content="Patel">
+<meta property="profile:username" content="Vyomie">
+
+<!-- ===== Twitter ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vyom Nishant Patel — AI / ML Developer &amp; Researcher">
+<meta name="twitter:description" content="16-year-old AI / ML developer and cognitive systems researcher. Founder of Teenage Works, building Clarifyed.ai.">
+<meta name="twitter:image" content="https://www.vyxm.in/vyom-pfp.jpg">
+
+<!-- ===== Structured data (schema.org Person) ===== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Vyom Nishant Patel",
+  "alternateName": ["Vyom Patel", "Vyom N. Patel", "Vyom", "Vyomie"],
+  "url": "https://www.vyxm.in/",
+  "image": "https://www.vyxm.in/vyom-pfp.jpg",
+  "jobTitle": "AI / ML Developer & Cognitive Systems Researcher",
+  "worksFor": { "@type": "Organization", "name": "Teenage Works", "url": "https://teenage.works" },
+  "knowsAbout": ["Artificial Intelligence", "Machine Learning", "Liquid Neural Networks", "Large Language Models", "Quantum Neural Networks", "Deep Learning", "Python", "PyTorch"],
+  "sameAs": [
+    "https://github.com/Vyomie",
+    "https://www.linkedin.com/in/vyomie",
+    "https://teenage.works",
+    "https://clarifyed.ai"
+  ]
+}
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
@@ -55,7 +101,7 @@ p{margin:0 0 10px}
   height:150px;
   border-radius:50%;
   border:3px solid #fff;
-  background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO7w-fRlAt7y5UCPmU20fVJkC_zSsuRBLsjg&s') center/cover no-repeat;
+  background:url('vyom-pfp.jpg') center/cover no-repeat;
 }
 
 /* --- HERO --- */
@@ -96,40 +142,37 @@ p{margin:0 0 10px}
   transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s;
 }
 .timeline-entry:hover{
-  transform:translateX(10px);
   border-color:rgba(255,255,255,0.3);
-  box-shadow:0 16px 36px rgba(0,0,0,0.55), inset 0 1px 1px rgba(255,255,255,0.28);
+  box-shadow:0 14px 32px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.28);
 }
-/* marker dot — pinned to the rail (counter-translates so it never detaches) */
+/* square marker node, sitting on the rail (no movement on hover) */
 .timeline-entry::before{
   content:'';
   position:absolute;
   left:-46px;top:21px;
   width:12px;height:12px;
   background:#fff;
-  border-radius:50%;
+  border-radius:3px;
   box-shadow:0 0 0 4px rgba(255,255,255,0.10), 0 0 8px rgba(255,255,255,0.25);
   z-index:2;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
+  transition:box-shadow .3s, background .3s;
 }
 .timeline-entry:hover::before{
-  transform:translateX(-10px) scale(1.15);
-  box-shadow:0 0 0 6px rgba(255,255,255,0.16), 0 0 14px rgba(255,255,255,0.5);
+  background:#fff;
+  box-shadow:0 0 0 5px rgba(255,255,255,0.18), 0 0 14px rgba(255,255,255,0.55);
 }
-/* connector — bridges rail to card and stretches as the card slides out */
+/* static connector bridging the rail to the card */
 .timeline-entry::after{
   content:'';
   position:absolute;
   left:-40px;top:26px;
   width:40px;height:2px;
-  background:rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.22);
   z-index:1;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1), width .3s, background .3s;
+  transition:background .3s;
 }
 .timeline-entry:hover::after{
-  transform:translateX(-10px);
-  width:50px;
-  background:rgba(255,255,255,0.6);
+  background:rgba(255,255,255,0.5);
 }
 .timeline-entry h3{margin:0;font-size:1.1em;letter-spacing:0.2px}
 .timeline-entry p{margin:7px 0 0;color:var(--muted);font-size:0.92em}
@@ -725,6 +768,7 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   <ul>
     <li><a href="#hero">Home</a></li>
     <li><a href="#projects">Projects</a></li>
+    <li><a href="/cv/">CV</a></li>
     <li><a href="#footer">Contact</a></li>
   </ul>
 </nav>
@@ -877,6 +921,18 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 <section id="timeline" class="fade">
   <h2>Project Timeline</h2>
   <div class="timeline">
+
+    <div class="timeline-entry">
+      <div class="time">2026 · Grant</div>
+      <h3>AWS Activate — Startup Credits</h3>
+      <p>Awarded $10,000 in AWS cloud credits through AWS Activate to build and scale ML infrastructure.</p>
+    </div>
+
+    <div class="timeline-entry">
+      <div class="time">2026 · Grant</div>
+      <h3>Microsoft for Startups — Azure Credits</h3>
+      <p>Awarded $10,000 in Microsoft Azure credits via Azure for Startups to power AI/ML workloads ($20,000 in cloud grants total).</p>
+    </div>
 
     <div class="timeline-entry">
       <div class="time">Apr 2026</div>
@@ -1156,6 +1212,8 @@ Y88b      /                                                ,e,
 <!-- CONTACT -->
 <footer id="footer" class="fade">
   <div>GitHub : <a href="https://github.com/Vyomie" target="_blank">github.com/Vyomie</a></div>
+  <div>LinkedIn : <a href="https://www.linkedin.com/in/vyomie" target="_blank">linkedin.com/in/vyomie</a></div>
+  <div>CV : <a href="/cv/">vyxm.in/cv</a></div>
   <div>Email : <a href="mailto:contact@vyxm.in">contact@vyxm.in</a></div>
   <br>© 2025 Vyom Nishant Patel
 </footer>
