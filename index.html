@@ -689,14 +689,7 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   color:#dcdcdc !important;
 }
 
-/* Visualizer + interactive controls on liquid glass */
-.viz-section{
-  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)) !important;
-  backdrop-filter:blur(16px) saturate(160%);
-  -webkit-backdrop-filter:blur(16px) saturate(160%);
-  border:1px solid rgba(255,255,255,0.14) !important;
-  box-shadow:0 10px 34px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.18);
-}
+/* Visualizer buttons on liquid glass (section/sidebar stay plain) */
 .problem-btn{
   background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)) !important;
   backdrop-filter:blur(10px) saturate(160%);
@@ -707,13 +700,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 }
 .problem-btn:hover{ transform:translateY(-2px); border-color:rgba(255,255,255,0.3) !important; }
 .problem-btn.active{ border-color:rgba(255,255,255,0.45) !important; color:#fff !important; }
-.sidebar{
-  background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
-  backdrop-filter:blur(10px) saturate(150%);
-  -webkit-backdrop-filter:blur(10px) saturate(150%);
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:12px;
-}
 .digit-controls button{
   background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)) !important;
   backdrop-filter:blur(10px) saturate(160%);
@@ -732,9 +718,7 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   <ul>
     <li><a href="#hero">Home</a></li>
     <li><a href="#projects">Projects</a></li>
-    <li><a href="https://www.vyxm.in/blogs" target="_blank">Blogs</a></li>
     <li><a href="#footer">Contact</a></li>
-    <li><a href="https://www.vyxm.in/talk/">Myself</a></li>
   </ul>
 </nav>
 
@@ -918,12 +902,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
     </div>
 
     <div class="timeline-entry">
-      <div class="time">Jul 2025 - Sept 2025</div>
-      <h3>Artha-1 (LLM)</h3>
-      <p>400M-parameter foundational LLM with custom architecture and semantic liquid blocks.</p>
-    </div>
-
-    <div class="timeline-entry">
       <div class="time">Feb 2025 - Mar 2025</div>
       <h3>VYXM Protocol</h3>
       <p>A toolkit/protocol python package for AI/ML and orchestration of multimodal system and making complex AI agents.</p>
@@ -973,17 +951,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 <section id="projects" class="fade">
   <h2>Projects</h2>
   <div class="projects">
-    <div class="project">
-      <img src="https://images.ctfassets.net/lzny33ho1g45/66htcVa9cVmb0Qi82tXLGC/9cb53a2535fdc6b1c14a2a725b4bfcb6/best-ai-chatbots-hero.jpg?fm=jpg&q=31&fit=thumb&w=1520&h=760" alt="">
-      <div class="project-title">Artha-1</div>
-      <div class="tooltip">
-        Independently built 400 M-parameter LLM using PyTorch with modular reasoning units and custom tokenizer.
-      <div class="tooltip-links">
-          <a href="https://github.com/Vyomie/Artha" target="_blank">GitHub</a>
-          <a href="https://www.vyxm.in/docs/artha1.pdf" target="_blank">Docs</a>
-      </div>
-      </div>
-    </div>
     <div class="project">
       <img src="https://www.energy.gov/sites/default/files/styles/full_article_width/public/2020/02/f71/021020-blog-qubits-1.jpg?itok=PQnyi16n" alt="">
       <div class="project-title">Quantum Neural Networks</div>
@@ -1182,7 +1149,6 @@ Y88b      /                                                ,e,
 <!-- CONTACT -->
 <footer id="footer" class="fade">
   <div>GitHub : <a href="https://github.com/Vyomie" target="_blank">github.com/Vyomie</a></div>
-  <div>Blog : <a href="https://www.vyxm.in/blogs" target="_blank">www.vyxm.in/blog</a></div>
   <div>Email : <a href="mailto:contact@vyxm.in">contact@vyxm.in</a></div>
   <br>© 2025 Vyom Nishant Patel
 </footer>
