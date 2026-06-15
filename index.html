@@ -12,6 +12,12 @@
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <link rel="canonical" href="https://www.vyxm.in/">
 
+<!-- ===== Favicon (profile photo) ===== -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
 <!-- ===== Open Graph ===== -->
 <meta property="og:type" content="profile">
 <meta property="og:title" content="Vyom Nishant Patel — AI / ML Developer &amp; Researcher">
@@ -144,17 +150,19 @@ p{margin:0 0 10px}
   position:relative;
   margin-bottom:16px;
   padding:16px 20px;
-  border:1px solid rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.18);
+  border-top-color:rgba(255,255,255,0.4);
   border-radius:14px;
-  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-  backdrop-filter:blur(12px) saturate(160%);
-  -webkit-backdrop-filter:blur(12px) saturate(160%);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,0.15);
-  transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s;
+  background:linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 55%, rgba(255,255,255,0.06));
+  backdrop-filter:blur(20px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter:blur(20px) saturate(180%) brightness(1.06);
+  box-shadow:0 6px 20px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.45), inset 0 -8px 16px rgba(0,0,0,0.22);
+  transition:border-color .3s, box-shadow .3s;
 }
 .timeline-entry:hover{
-  border-color:rgba(255,255,255,0.3);
-  box-shadow:0 14px 32px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.28);
+  border-color:rgba(255,255,255,0.34);
+  border-top-color:rgba(255,255,255,0.55);
+  box-shadow:0 14px 34px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -8px 16px rgba(0,0,0,0.22);
 }
 /* square marker node, sitting on the rail (no movement on hover) */
 .timeline-entry::before{
@@ -172,30 +180,12 @@ p{margin:0 0 10px}
   background:#fff;
   box-shadow:0 0 0 5px rgba(255,255,255,0.18), 0 0 14px rgba(255,255,255,0.55);
 }
-/* static connector bridging the rail to the card */
-.timeline-entry::after{
-  content:'';
-  position:absolute;
-  left:-40px;top:26px;
-  width:40px;height:2px;
-  background:rgba(255,255,255,0.22);
-  z-index:1;
-  transition:background .3s;
-}
-.timeline-entry:hover::after{
-  background:rgba(255,255,255,0.5);
-}
 .timeline-entry h3{margin:0;font-size:1.1em;letter-spacing:0.2px}
 .timeline-entry p{margin:7px 0 0;color:var(--muted);font-size:0.92em}
 .timeline-entry .time{
-  display:inline-block;
-  color:#cfcfcf;
-  font-size:0.7em;
-  margin-bottom:8px;
-  padding:2px 9px;
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:999px;
-  background:rgba(255,255,255,0.05);
+  color:var(--muted);
+  font-size:0.75em;
+  margin-bottom:6px;
   text-transform:uppercase;
   letter-spacing:1.2px;
 }
@@ -234,6 +224,17 @@ p{margin:0 0 10px}
   background:rgba(0,0,0,0.6);
   padding:4px 8px;
   font-weight:600;
+}
+
+/* visually hidden but readable by crawlers / screen readers */
+.sr-only{
+  position:absolute !important;
+  width:1px;height:1px;
+  padding:0;margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
 }
 .tooltip{
   position:absolute;
@@ -314,7 +315,7 @@ footer{
       border: 1px solid rgba(255,255,255,0.04);
     }
 .viz-header { margin-bottom: 10px; }
-.viz-title { font-size: 2rem; margin: 0 0 6px; font-weight:700; color: var(--accent); }
+.viz-title { font-size: 2.4rem; margin: 0 0 6px; font-weight:normal; font-family:var(--display); letter-spacing:1px; color: var(--accent); }
 .viz-sub { margin: 0 0 14px; color: var(--muted); }
 
 .problem-selector { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
@@ -380,8 +381,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   .timeline {padding-left:36px; --marker-center:24px;}
   .timeline-entry {margin-bottom:14px; padding:14px 16px;}
   .timeline-entry::before {left:-34px; top:18px; width:12px; height:12px;}
-  .timeline-entry::after {left:-28px; top:23px; width:28px;}
-  .timeline-entry:hover::after {width:38px;}
   .timeline-entry h3 {font-size:1em;}
   .timeline-entry .time {font-size:0.66em;}
   
@@ -714,66 +713,100 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 
 /* ===== LIQUID GLASS (applied across the site) ===== */
 .glass-card{
-  background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
-  backdrop-filter:blur(16px) saturate(180%);
-  -webkit-backdrop-filter:blur(16px) saturate(180%);
-  border:1px solid rgba(255,255,255,0.16);
+  position:relative;
+  background:linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 55%, rgba(255,255,255,0.07));
+  backdrop-filter:blur(22px) saturate(190%) brightness(1.08);
+  -webkit-backdrop-filter:blur(22px) saturate(190%) brightness(1.08);
+  border:1px solid rgba(255,255,255,0.2);
+  border-top-color:rgba(255,255,255,0.45);
   border-radius:18px;
-  box-shadow:0 8px 30px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.22), inset 0 -1px 1px rgba(0,0,0,0.25);
+  box-shadow:0 8px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -10px 20px rgba(0,0,0,0.28);
+  overflow:hidden;
+}
+/* glossy specular sheen across the top — the "liquid glass" highlight */
+.glass-card::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.05) 26%, transparent 52%);
 }
 
 /* Notes / tweets as liquid-glass cards */
 .tweets{ display:flex; flex-direction:column; gap:16px; }
 .tweet{
-  border:1px solid rgba(255,255,255,0.12) !important;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.18) !important;
+  border-top-color:rgba(255,255,255,0.4) !important;
   border-radius:14px;
   padding:16px 20px !important;
-  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-  backdrop-filter:blur(12px) saturate(160%);
-  -webkit-backdrop-filter:blur(12px) saturate(160%);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,0.15);
+  background:linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 55%, rgba(255,255,255,0.06));
+  backdrop-filter:blur(20px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter:blur(20px) saturate(180%) brightness(1.06);
+  box-shadow:0 6px 20px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.45), inset 0 -8px 16px rgba(0,0,0,0.22);
   transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
-.tweet:first-child{ border-top:1px solid rgba(255,255,255,0.12) !important; }
+.tweet::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.04) 26%, transparent 52%);
+}
+.tweet > *{ position:relative; }
+.tweet:first-child{ border-top-color:rgba(255,255,255,0.4) !important; }
 .tweet:hover{
   transform:translateY(-4px);
-  border-color:rgba(255,255,255,0.26) !important;
-  box-shadow:0 12px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.22);
+  border-color:rgba(255,255,255,0.32) !important;
+  border-top-color:rgba(255,255,255,0.55) !important;
+  box-shadow:0 14px 32px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -8px 16px rgba(0,0,0,0.22);
 }
 
 /* Project hover tooltips on liquid glass */
 .project .tooltip{
-  background:linear-gradient(135deg, rgba(20,20,22,0.82), rgba(10,10,12,0.7)) !important;
-  backdrop-filter:blur(16px) saturate(160%);
-  -webkit-backdrop-filter:blur(16px) saturate(160%);
-  border:1px solid rgba(255,255,255,0.12);
+  background:linear-gradient(180deg, rgba(28,28,32,0.78), rgba(10,10,12,0.72)) !important;
+  backdrop-filter:blur(20px) saturate(170%) brightness(1.05);
+  -webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.05);
+  border:1px solid rgba(255,255,255,0.16);
+  border-top-color:rgba(255,255,255,0.4);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.35), inset 0 -10px 20px rgba(0,0,0,0.3);
   color:#dcdcdc !important;
 }
 
 /* Visualizer buttons on liquid glass (section/sidebar stay plain) */
 .problem-btn{
-  background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)) !important;
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-  border:1px solid rgba(255,255,255,0.14) !important;
+  background:linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03)) !important;
+  backdrop-filter:blur(14px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter:blur(14px) saturate(180%) brightness(1.06);
+  border:1px solid rgba(255,255,255,0.18) !important;
+  border-top-color:rgba(255,255,255,0.4) !important;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.4) !important;
   color:#e9eef6 !important;
   transition:transform .2s ease, border-color .2s ease;
 }
-.problem-btn:hover{ transform:translateY(-2px); border-color:rgba(255,255,255,0.3) !important; }
-.problem-btn.active{ border-color:rgba(255,255,255,0.45) !important; color:#fff !important; }
+.problem-btn:hover{ transform:translateY(-2px); border-color:rgba(255,255,255,0.34) !important; }
+.problem-btn.active{ border-color:rgba(255,255,255,0.5) !important; color:#fff !important; }
 .digit-controls button{
-  background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)) !important;
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-  border:1px solid rgba(255,255,255,0.16) !important;
+  background:linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03)) !important;
+  backdrop-filter:blur(14px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter:blur(14px) saturate(180%) brightness(1.06);
+  border:1px solid rgba(255,255,255,0.18) !important;
+  border-top-color:rgba(255,255,255,0.4) !important;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.4) !important;
 }
-.digit-controls button:hover{ border-color:rgba(255,255,255,0.32) !important; }
+.digit-controls button:hover{ border-color:rgba(255,255,255,0.34) !important; }
 
 </style>
 
 
 </head>
 <body>
+
+<!-- ===== Crawlable content for search engines / bots (visually hidden) ===== -->
+<div class="sr-only">
+  <h1>Vyom Nishant Patel — AI / ML Developer and Cognitive Systems Researcher</h1>
+  <p>Vyom Nishant Patel (also known as Vyom Patel, Vyom N. Patel, Vyom and Vyomie) is a 16-year-old AI / ML developer and cognitive systems researcher. He explores adaptive intelligence, Liquid Neural Networks, large language models and efficient neural architectures. He is the founder of Teenage Works and is building Clarifyed.ai, an AI learning platform.</p>
+  <p>Vyom Patel was selected for YC Startup School India and awarded $10,000 in AWS Activate credits and $10,000 in Microsoft Azure for Startups credits ($20,000 in cloud grants). He was selected for the PRAYAAS research initiative by NCERT for his work on Liquid Neural Networks.</p>
+  <p>Interactive Math/Physics Visualizer — an interactive playground to visualize common maths and physics problems, including sine waves, quadratics, projectile motion, circle geometry, simple harmonic motion and point-charge electric fields. Grid units map to math units and the origin (0,0) is at the canvas centre.</p>
+  <p>Digit Classifier (MNIST, 16×16) — draw a digit from 0 to 9 in the box; a multilayer perceptron runs entirely in your browser using weights trained on MNIST and shows live output activations for each class. Tip: draw in the centre with thick strokes.</p>
+  <p>Skills: Python, PyTorch, TensorFlow, JavaScript, C++, Linux, HTML/CSS, Liquid Neural Networks, large language models, quantum neural networks, Qiskit. Contact: contact@vyxm.in · github.com/Vyomie · linkedin.com/in/vyomie.</p>
+</div>
+
 <!-- NAVBAR -->
 <nav id="navbar">
   <ul>
@@ -921,10 +954,8 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   <h1>(Vyom Nishant Patel)</h1>
   <div class="handle">@Vyomie</div>
   <p class="bio">
-    AI / ML Developer · Cognitive Systems Researcher · 16 y/o  
-    GPA 3.65 / 4 · 
-    Exploring Adaptive intelligence, Liquid Neural Networks, and efficient architectures.  
-    Founder of <a href="https://teenage.works">Teenage Works</a>.
+    AI / ML Developer &amp; Cognitive Systems Researcher · 16 y/o<br>
+    Founder of <a href="https://teenage.works">Teenage Works</a> &amp; AISC · building <a href="https://clarifyed.ai">Clarifyed.ai</a> · Liquid Neural Networks
   </p>
 </section>
 
@@ -1032,7 +1063,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
         Quantum Neural Network Model with Qiskit having ~2500 parameters using Rotational entanglement to classify compressed images of cats and dogs on real quantum hardware.
         <div class="tooltip-links">
           <a href="https://github.com/Vyomie/QNN" target="_blank">GitHub</a>
-          <a href="https://www.vyxm.in/docs/quantum-neural-network.pdf" target="_blank">Docs</a>
       </div>
       </div>
     </div>
@@ -1043,7 +1073,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
         Research paper on continual learning navigation agent achieving 97% success in obstacle-rich maps without large pre-training on datasets.
       <div class="tooltip-links">
           <a href="https://github.com/Vyomie/AdaptiveLearningLNN" target="_blank">GitHub</a>
-          <a href="https://www.vyxm.in/docs/adaptive-learning-liquid-neural-network.pdf" target="_blank">Docs</a>
       </div>
       </div>
     </div>
@@ -1054,7 +1083,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
         Music-therapy AI agent that recommends and curates personalized playlists directly in spotify according to user's emotions using a corpus of custom 500 songs dataset.
       <div class="tooltip-links">
           <a href="https://github.com/Vyomie/MusiCat" target="_blank">GitHub</a>
-          <a href="https://www.vyxm.in/docs/musicat.pdf" target="_blank">Docs</a>
       </div>
       </div>
     </div>
@@ -1065,7 +1093,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
         Protocol to orchestrate large AI systems and perform automated tasks using specialist models.
     <div class="tooltip-links">
           <a href="https://github.com/Vyomie/VYXM" target="_blank">GitHub</a>
-          <a href="https://www.vyxm.in/docs/vyxm-protocol.pdf" target="_blank">Docs</a>
       </div>
       </div>
     </div>
@@ -1074,16 +1101,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
       <div class="project-title">Clarifyed</div>
       <div class="tooltip">
         A student-centric app that solves doubts using Manim animations generated by our custom AI pipeline.
-      <div class="tooltip-links">
-          <a href="https://clarifyed.ai" target="_blank">Website</a>
-      </div>
-      </div>
-    </div>
-    <div class="project">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHOhhuPoNJ8iANTj7BujbaSeQxvc8v0UGKrjSuWK-dww&s" alt="">
-      <div class="project-title">Custom File format '.pndr'</div>
-      <div class="tooltip">
-        Custom file format for Clarifyed that can render both LaTeX and Manim together in a singular PDF like file.
       <div class="tooltip-links">
           <a href="https://clarifyed.ai" target="_blank">Website</a>
       </div>
@@ -1159,7 +1176,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 <section class="viz-section" id="visualizer">
     <div class="viz-header">
       <div class="viz-title">Interactive Math/Physics Visualizer</div>
-      <div class="viz-sub">Interactive playground to visualize common maths and physics problems.</div>
     </div>
 
     <div class="problem-selector" id="problemSelector"></div>
@@ -1170,7 +1186,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
         <div id="equationOverlay" class="equationOverlay">\(\text{Select a problem}\)</div>
         <!-- visualizer canvas -->
         <canvas id="scene" width="900" height="520"></canvas>
-        <div class="note">Grid units map to math units; origin (0,0) is at canvas center.</div>
       </div>
     </div>
 </section>
@@ -1178,10 +1193,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
 <!--Digit Classifier-->
 <section id="digit-classifier" class="fade">
   <h2>Digit Classifier (MNIST · 16×16)</h2>
-  <p style="color:var(--muted);max-width:600px;">
-    Draw a digit (0–9) in the box. The model runs in your browser using weights trained on MNIST
-    and shows live activations for each class.
-  </p>
 
   <div class="digit-layout">
     <div class="digit-left">
@@ -1190,7 +1201,6 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
         <button id="clearDigit">Clear</button>
         <button id="predictDigit">Predict</button>
       </div>
-      <div class="digit-hint">Tip: Draw in the center with thick strokes.</div>
     </div>
 
     <div class="digit-right">
