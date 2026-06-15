@@ -127,8 +127,17 @@ p{margin:0 0 10px}
   min-height:60vh;
 }
 #hero h1{font-size:3.6em;font-family:var(--display);font-weight:normal;letter-spacing:1px}
-#hero .handle{color:var(--muted);margin-bottom:20px}
+#hero .handle{font-family:var(--display);font-size:1.5em;letter-spacing:0.5px;color:var(--muted);margin-bottom:20px}
 #hero .bio{max-width:700px;color:var(--muted)}
+/* subtitle labels (Bristol) */
+.widget-label{
+  font-family:var(--display);
+  font-weight:normal;
+  font-size:1.5em;
+  letter-spacing:0.5px;
+  text-align:left;
+  margin-bottom:14px;
+}
 
 /* --- TIMELINE --- */
 .timeline{
@@ -1127,35 +1136,18 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
     </div>
   </div>
 
-<!-- SPOTIFY & GITHUB -->
+<!-- GITHUB -->
 <section id="widgets" class="fade" style="padding:60px 8vw; text-align:center; color:#fff; font-family:'JetBrains Mono', monospace;">
-  <h2 style="margin-bottom:36px; font-size:2em; color:#fff;">Spotify &amp; GitHub</h2>
-  <div style="display:flex; flex-direction:column; align-items:center; gap:48px; max-width:920px; margin:0 auto;">
-
-    <!-- Spotify -->
+  <h2 style="margin-bottom:30px; color:#fff;">
+    <svg viewBox="0 0 16 16" width="34" height="34" fill="currentColor" aria-hidden="true" style="vertical-align:-7px; margin-right:12px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub
+  </h2>
+  <div style="display:flex; flex-direction:column; align-items:center; max-width:760px; margin:0 auto;">
     <div style="width:100%;">
-      <div style="margin-bottom:14px; font-weight:bold; font-size:1.15em; text-align:left;">Spotify Playlist</div>
-      <div class="glass-card" style="border-radius:18px; overflow:hidden; padding:0;">
-        <iframe
-          style="width:100%; border:0; display:block; border-radius:18px;"
-          src="https://open.spotify.com/embed/playlist/29BaDUJS5n5venJE9TRfmF?si=zMBabEc4S8u5WkSNNPKakw&theme=0"
-          height="560"
-          frameborder="0"
-          allowtransparency="true"
-          allow="encrypted-media"
-          loading="lazy">
-        </iframe>
-      </div>
-    </div>
-
-    <!-- GitHub -->
-    <div style="width:100%;">
-      <div style="margin-bottom:14px; font-weight:bold; font-size:1.15em; text-align:left;">Latest GitHub Activity</div>
+      <div class="widget-label">Latest GitHub Activity</div>
       <div id="githubWidget" class="glass-card" style="padding:8px 18px; min-height:120px; color:#fff; text-align:left;">
         Loading…
       </div>
     </div>
-
   </div>
 </section>
 
@@ -1524,19 +1516,6 @@ drawPreview();
   window.addEventListener('load', sizeTimelineRail);
   window.addEventListener('resize', sizeTimelineRail);
   setTimeout(sizeTimelineRail, 400);
-
-  // Spotify mock (replace token with your bearer token)
-  const SPOTIFY_TOKEN="YOUR_SPOTIFY_BEARER_TOKEN";
-  async function fetchSpotify(){
-    try{
-      const res=await fetch("https://api.spotify.com/v1/me/player/currently-playing",{headers:{Authorization:`Bearer ${SPOTIFY_TOKEN}`}});
-      if(res.status!==200){document.getElementById('spotifyWidget').textContent="Not playing";return;}
-      const data=await res.json();
-      document.getElementById('spotifyWidget').textContent=`${data.item.name} — ${data.item.artists.map(a=>a.name).join(', ')}`;
-    }catch(e){document.getElementById('spotifyWidget').textContent="Error fetching Spotify";}
-  }
-  fetchSpotify();
-  setInterval(fetchSpotify,15000);
 </script>
 
 
