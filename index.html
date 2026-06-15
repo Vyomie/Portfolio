@@ -110,21 +110,23 @@ p{margin:0 0 10px}
   height:400px;
   background:url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
 }
-#header #avatar{
-  position:absolute;
-  bottom:20px;
-  left:50px;
+
+/* --- HERO --- */
+#hero{
+  display:flex;flex-direction:column;justify-content:flex-start;
+  min-height:50vh;
+  padding-top:0;
+}
+/* avatar straddles the banner: half on the banner, half below */
+#hero #avatar{
   width:150px;
   height:150px;
   border-radius:50%;
   border:3px solid #fff;
   background:url('vyom-pfp.jpg') center/cover no-repeat;
-}
-
-/* --- HERO --- */
-#hero{
-  display:flex;flex-direction:column;justify-content:center;
-  min-height:60vh;
+  margin-top:-75px;
+  margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);
 }
 #hero h1{font-size:3.6em;font-family:var(--display);font-weight:normal;letter-spacing:1px}
 #hero .handle{font-family:var(--display);font-size:1.5em;letter-spacing:0.5px;color:var(--muted);margin-bottom:20px}
@@ -382,9 +384,9 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
   #hero h1 {font-size:2.2em;}
   #hero .bio {max-width:100%; font-size:0.95em;}
 
-  /* Smaller header banner + avatar on mobile (kept on the left) */
+  /* Smaller header banner + avatar straddling it on mobile (left) */
   #header {height:190px;}
-  #header #avatar {width:96px; height:96px; bottom:16px; left:24px;}
+  #hero #avatar {width:104px; height:104px; margin-top:-52px; margin-bottom:14px;}
   
   /* Timeline */
   .timeline {padding-left:36px; --marker-center:24px;}
@@ -953,14 +955,13 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; margin-top:-7p
                                                                                                                                                                                                         
 </pre>
 
-<!-- HEADER IMAGE & AVATAR -->
-<div id="header" class="fade">
-  <div id="avatar"></div>
-</div>
+<!-- HEADER IMAGE -->
+<div id="header" class="fade"></div>
 
 <!-- HERO -->
 <section id="hero" class="fade">
-  <h1>(Vyom Nishant Patel)</h1>
+  <div id="avatar"></div>
+  <h1>{Vyom N. Patel}</h1>
   <div class="handle">@Vyomie</div>
   <p class="bio">
     AI / ML Developer &amp; Cognitive Systems Researcher · 16 y/o<br>
